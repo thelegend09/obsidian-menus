@@ -22,6 +22,17 @@
     }
 }
 
+.menu-container,
+.menu-container a {
+    transition: 125ms;
+}
+
+/* 
+ •·················•·················•
+    | Menu Container Styles |
+ •·················•·················•
+*/
+
 /* Default style variant */
 
 .menu-container.default {
@@ -29,7 +40,8 @@
     gap: 1em;
     flex-wrap: wrap;
     border-radius: 6px;
-    background-color: var(--background-primary);
+    background-color: var(--bg, var(--background-primary));
+    font-family: var(--font, inherit);
 
     a {
         padding: 0.6em 1em;
@@ -37,14 +49,59 @@
         border-radius: 4px;
         transition: all 0.2s ease;
         font-weight: 500;
-        border: 1px solid var(--background-modifier-border);
-        color: var(--text-normal);
+        border: 1px solid var(--border, var(--background-modifier-border));
+        color: var(--text, var(--text-normal));
+        font-family: var(--font, inherit);
 
         &:hover {
-            color: var(--text-accent);
-            /* background-color: var(--background-modifier-hover); */
-            border-color: var(--text-accent);
+            color: var(--accent, var(--text-accent));
+            border-color: var(--hover-border, var(--accent, var(--text-accent)));
         }
+
+        &.menu-internal-link {
+            color: var(--internal-text, var(--text, var(--text-normal)));
+            border-color: var(--internal-border, var(--border, var(--background-modifier-border)));
+            background-color: var(--internal-bg, transparent);
+            font-family: var(--internal-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--internal-accent, var(--accent, var(--text-accent)));
+                border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--internal-hover-bg, var(--hover-bg, transparent));
+            }
+        }
+
+        &.menu-external-link {
+            color: var(--external-text, var(--text, var(--text-normal)));
+            border-color: var(--external-border, var(--border, var(--background-modifier-border)));
+            background-color: var(--external-bg, transparent);
+            font-family: var(--external-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--external-accent, var(--accent, var(--text-accent)));
+                border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--external-hover-bg, var(--hover-bg, transparent));
+            }
+        }
+
+        &.menu-file-link {
+            color: var(--file-text, var(--text, var(--text-normal)));
+            border-color: var(--file-border, var(--border, var(--background-modifier-border)));
+            background-color: var(--file-bg, transparent);
+            font-family: var(--file-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--file-accent, var(--accent, var(--text-accent)));
+                border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--file-hover-bg, var(--hover-bg, transparent));
+            }
+        }
+    }
+
+    &.wide a {
+        flex-grow: 1;
+        flex-basis: 150px;
+        text-align: center;
     }
 }
 
@@ -52,13 +109,7 @@
 .menu-external-link
 .menu-internal-link */
 
-.menu-container {
-    transition: 125ms;
 
-    a {
-        transition: 125ms;
-    }
-}
 
 /* Minimal style variant */
 .menu-container.minimal {
@@ -66,7 +117,8 @@
     gap: 0.2em;
     flex-wrap: wrap;
     transition: 125ms;
-
+    background-color: var(--bg, transparent);
+    font-family: var(--font, inherit);
 
     a {
         padding: 0.4em 0.8em;
@@ -75,34 +127,42 @@
         transition: color 0.15s ease;
         font-size: 0.9em;
         font-weight: normal;
+        color: var(--text, var(--text-normal));
+        font-family: var(--font, inherit);
 
         &:hover {
-            background-color: var(--background-secondary);
-            color: var(--text-accent);
+            background-color: var(--hover-bg, var(--background-secondary));
+            color: var(--accent, var(--text-accent));
         }
-    }
 
-    a.menu-internal-link {
-        color: var(--text-accent);
+        &.menu-internal-link {
+            color: var(--internal-text, var(--internal, var(--text-accent)));
+            font-family: var(--internal-font, var(--font, inherit));
 
-        &:hover {
-            color: var(--text-accent-hover);
+            &:hover {
+                color: var(--internal-accent, var(--internal-hover, var(--text-accent-hover)));
+                background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
+            }
         }
-    }
 
-    a.menu-external-link {
-        color: var(--text-faint);
+        &.menu-external-link {
+            color: var(--external-text, var(--external, var(--text-faint)));
+            font-family: var(--external-font, var(--font, inherit));
 
-        &:hover {
-            color: var(--text-normal);
+            &:hover {
+                color: var(--external-accent, var(--external-hover, var(--text-normal)));
+                background-color: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
+            }
         }
-    }
 
-    a.menu-file-link {
-        color: var(--text-faint);
+        &.menu-file-link {
+            color: var(--file-text, var(--file, var(--text-faint)));
+            font-family: var(--file-font, var(--font, inherit));
 
-        &:hover {
-            color: var(--text-normal);
+            &:hover {
+                color: var(--file-accent, var(--file-hover, var(--text-normal)));
+                background-color: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
+            }
         }
     }
 }
@@ -112,7 +172,8 @@
     display: flex;
     gap: 0.2em;
     flex-wrap: wrap;
-
+    background-color: var(--bg, transparent);
+    font-family: var(--font, inherit);
 
     a {
         padding: 0.4em 0.8em;
@@ -121,18 +182,56 @@
         transition: color 0.15s ease;
         font-size: 0.9em;
         font-weight: normal;
-        background-color: var(--background-secondary);
-        border: 1px solid var(--background-secondary);
-        color: var(--text-faint);
-
+        background-color: var(--item-bg, var(--background-secondary));
+        border: 1px solid var(--border, var(--background-secondary));
+        color: var(--text, var(--text-faint));
+        font-family: var(--font, inherit);
 
         &:hover {
-            background-color: var(--background-secondary);
-            color: var(--text-accentl);
-            border: 1px solid var(--text-accent);
+            background-color: var(--hover-bg, var(--background-secondary));
+            color: var(--accent, var(--text-accent));
+            border: 1px solid var(--hover-border, var(--accent, var(--text-accent)));
+        }
+
+        &.menu-internal-link {
+            color: var(--internal-text, var(--text, var(--text-faint)));
+            border-color: var(--internal-border, var(--border, var(--background-secondary)));
+            background-color: var(--internal-bg, var(--item-bg, var(--background-secondary)));
+            font-family: var(--internal-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--internal-accent, var(--accent, var(--text-accent)));
+                border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
+            }
+        }
+
+        &.menu-external-link {
+            color: var(--external-text, var(--text, var(--text-faint)));
+            border-color: var(--external-border, var(--border, var(--background-secondary)));
+            background-color: var(--external-bg, var(--item-bg, var(--background-secondary)));
+            font-family: var(--external-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--external-accent, var(--accent, var(--text-accent)));
+                border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
+            }
+        }
+
+        &.menu-file-link {
+            color: var(--file-text, var(--text, var(--text-faint)));
+            border-color: var(--file-border, var(--border, var(--background-secondary)));
+            background-color: var(--file-bg, var(--item-bg, var(--background-secondary)));
+            font-family: var(--file-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--file-accent, var(--accent, var(--text-accent)));
+                border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
+            }
         }
     }
-
 }
 
 
@@ -141,38 +240,80 @@
     gap: 0.5em;
     flex-wrap: wrap;
     border-radius: 8px;
-    background-color: var(--background-primary);
+    background-color: var(--bg, var(--background-primary));
+    font-family: var(--font, 'Space Grotesk', Inter, sans-serif);
 
     a {
-        font-family: 'Space Grotesk', Inter, sans-serif;
-        font-size: var(--fs, 1.1rem);
+        font-family: var(--font, 'Space Grotesk', Inter, sans-serif);
+        font-size: var(--fs, 0.9rem);
         white-space: nowrap;
-        color: var(--cyan-500, darkcyan);
+        color: var(--text, var(--cyan-500, darkcyan));
         text-align: center;
         text-decoration: none;
-        text-align: center;
-
-        border: 1px solid var(--cyan-500, darkcyan);
+        border: 1px solid var(--border, var(--cyan-500, darkcyan));
         border-radius: 3px;
         padding-block: var(--size-2, 0.5em);
         padding-inline: var(--size-3, 2em);
         transition: 250ms;
 
         &:hover {
-            color: var(--text-accent);
-            /* background-color: var(--background-modifier-hover); */
-            border: 1px solid var(--orange-500, darkorange);
-            color: var(--orange-500, darkorange);
+            color: var(--accent, var(--orange-500, darkorange));
+            border: 1px solid var(--hover-border, var(--accent, var(--orange-500, darkorange)));
         }
+
+        &.menu-internal-link {
+            color: var(--internal-text, var(--text, var(--cyan-500, darkcyan)));
+            border-color: var(--internal-border, var(--border, var(--cyan-500, darkcyan)));
+            background-color: var(--internal-bg, transparent);
+            font-family: var(--internal-font, var(--font, 'Space Grotesk', Inter, sans-serif));
+
+            &:hover {
+                color: var(--internal-accent, var(--accent, var(--orange-500, darkorange)));
+                border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
+                background-color: var(--internal-hover-bg, var(--hover-bg, transparent));
+            }
+        }
+
+        &.menu-external-link {
+            color: var(--external-text, var(--text, var(--cyan-500, darkcyan)));
+            border-color: var(--external-border, var(--border, var(--cyan-500, darkcyan)));
+            background-color: var(--external-bg, transparent);
+            font-family: var(--external-font, var(--font, 'Space Grotesk', Inter, sans-serif));
+
+            &:hover {
+                color: var(--external-accent, var(--accent, var(--orange-500, darkorange)));
+                border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
+                background-color: var(--external-hover-bg, var(--hover-bg, transparent));
+            }
+        }
+
+        &.menu-file-link {
+            color: var(--file-text, var(--text, var(--cyan-500, darkcyan)));
+            border-color: var(--file-border, var(--border, var(--cyan-500, darkcyan)));
+            background-color: var(--file-bg, transparent);
+            font-family: var(--file-font, var(--font, 'Space Grotesk', Inter, sans-serif));
+
+            &:hover {
+                color: var(--file-accent, var(--accent, var(--orange-500, darkorange)));
+                border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
+                background-color: var(--file-hover-bg, var(--hover-bg, transparent));
+            }
+        }
+    }
+
+    &.wide a {
+        flex-grow: 1;
+        flex-basis: 150px;
+        text-align: center;
     }
 }
 
 .menu-container.aether {
     display: grid;
-    grid-template-columns:
-        repeat(auto-fit, minmax(150px, 1fr));
-
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 0.5em;
+    background-color: var(--bg, transparent);
+    font-family: var(--font, inherit);
 
     a {
         text-align: center;
@@ -180,7 +321,53 @@
         font-weight: 600;
         padding: 0.5em 1em;
         border-radius: 8px;
+        color: var(--text, var(--text-normal));
+        border: 1px solid var(--border, var(--background-modifier-border));
+        font-family: var(--font, inherit);
 
-        border: 1px solid var(--background-modifier-border);
+        &:hover {
+            color: var(--accent, var(--text-accent));
+            border-color: var(--hover-border, var(--accent, var(--text-accent)));
+            background-color: var(--hover-bg, var(--background-modifier-hover));
+        }
+
+        &.menu-internal-link {
+            color: var(--internal-text, var(--text, var(--text-normal)));
+            border-color: var(--internal-border, var(--border, var(--background-modifier-border)));
+            background-color: var(--internal-bg, transparent);
+            font-family: var(--internal-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--internal-accent, var(--accent, var(--text-accent)));
+                border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
+            }
+        }
+
+        &.menu-external-link {
+            color: var(--external-text, var(--text, var(--text-normal)));
+            border-color: var(--external-border, var(--border, var(--background-modifier-border)));
+            background-color: var(--external-bg, transparent);
+            font-family: var(--external-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--external-accent, var(--accent, var(--text-accent)));
+                border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--external-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
+            }
+        }
+
+        &.menu-file-link {
+            color: var(--file-text, var(--text, var(--text-normal)));
+            border-color: var(--file-border, var(--border, var(--background-modifier-border)));
+            background-color: var(--file-bg, transparent);
+            font-family: var(--file-font, var(--font, inherit));
+
+            &:hover {
+                color: var(--file-accent, var(--accent, var(--text-accent)));
+                border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
+                background-color: var(--file-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
+            }
+        }
     }
 }

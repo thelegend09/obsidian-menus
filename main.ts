@@ -3,27 +3,61 @@ import { fileURLToPath } from 'url';
 
 const { shell } = require('electron');
 
+// Simple YAML parser for color properties
+function parseYAML(text: string) {
+	const result: Record<string, string> = {};
+	const lines = text.split('\n');
+	for (const line of lines) {
+		const trimmed = line.trim();
+		if (trimmed && trimmed.includes(':')) {
+			const [key, ...valueParts] = trimmed.split(':');
+			const value = valueParts.join(':').trim();
+			if (key && value) {
+				result[key.trim()] = value;
+			}
+		}
+	}
+	return result;
+}
+
 export default class MenuPlugin extends Plugin {
 	async onload() {
 		this.registerMarkdownCodeBlockProcessor('menu', (source, el, ctx) => {
-			// Parse the source
 			const lines = source.trim().split('\n');
-			let cssClass = '';
+			let layout = '';
+			let colors: Record<string, string> = {};
 			const links: string[] = [];
-
+			
+			// Parse YAML-like properties and links
 			for (const line of lines) {
 				const trimmed = line.trim();
-				if (trimmed.startsWith('class:')) {
-					cssClass = trimmed.substring(6).trim().replace(/[{}]/g, '');
-				} else if (trimmed) {
+				if (trimmed.startsWith('layout:') || trimmed.startsWith('class:')) {
+					const colonIndex = trimmed.indexOf(':');
+					layout = trimmed.substring(colonIndex + 1).trim();
+				} else if (trimmed.includes(':') && !trimmed.startsWith('[') && !trimmed.startsWith('[[')) {
+					// Parse color properties
+					const [key, ...valueParts] = trimmed.split(':');
+					const value = valueParts.join(':').trim();
+					if (key && value && !key.includes('//') && !key.includes('http')) {
+						colors[key.trim()] = value;
+					}
+				} else if (trimmed && !trimmed.includes(':')) {
+					links.push(trimmed);
+				} else if (trimmed.startsWith('[')) {
 					links.push(trimmed);
 				}
 			}
-
-			// Create the container - if no class specified, use 'default'
-			const finalClass = cssClass || 'default';
-			const container = el.createEl('div', { cls: `menu-container ${finalClass}` });
-
+			
+			const finalLayout = layout || 'default';
+			const container = el.createEl('div', { cls: `menu-container ${finalLayout}` });
+			
+			// Apply custom colors as CSS variables
+			if (Object.keys(colors).length > 0) {
+				for (const [key, value] of Object.entries(colors)) {
+					container.style.setProperty(`--${key}`, value);
+				}
+			}
+ 
 			// Process each link
 			for (const link of links) {
 				if (link.startsWith('[[') && link.endsWith(']]')) {

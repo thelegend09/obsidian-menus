@@ -1,27 +1,14 @@
 # Menu Plugin for Obsidian
 
-A flexible Obsidian plugin that allows you to create custom menus using code blocks with support for internal links, external links, and local file links.
+Create custom navigation menus in Obsidian using simple code blocks. Supports internal links, external URLs, and local file links with built-in themes and full customization.
 
+## Basic Usage
 
-## Todo
-- [ ] Maybe change the format from using "class" to using "layout" and have them numbered? Like grid, flex, etc.
-
-
-## Features
-
-- 🔗 **Multiple Link Types**: Support for Obsidian internal links, external web links, and local file links
-- 🎨 **Three Built-in Themes**: Default, minimal, and enhanced styling options
-- ⚙️ **Custom Styling**: Full control over appearance with custom CSS classes
-- 📁 **File System Integration**: Click to open local files and folders with system default applications
-- 🔄 **Hot Reload Support**: Development-friendly with automatic reloading
-
-## Usage
-
-Create a menu using a `menu` code block:
+Create a menu using a `menu` code block with one of the built-in layouts:
 
 ````markdown
 ```menu
-class: default
+layout: default
 [[Home]]
 [[Projects|My Projects]]
 [Google](https://google.com)
@@ -29,118 +16,149 @@ class: default
 ```
 ````
 
-### Syntax
+## Built-in Layouts
 
-- **First line**: `class: {theme-name}` - Specifies the styling theme
-- **Subsequent lines**: Links in various formats
-
-### Link Types
-
-#### Internal Links (Obsidian Notes)
-```
-[[Note Name]]           # Links to "Note Name.md"
-[[Note Name|Display]]   # Links to "Note Name.md" but displays "Display"
-```
-
-#### External Links (Web URLs)
-```
-[Display Text](https://example.com)
-```
-
-#### File Links (Local Files/Folders)
-```
-[My Documents](file:///C:/Users/YourName/Documents)
-[Project Folder](file:///C:/Users/YourName/Projects)
-[PDF File](file:///C:/Users/YourName/document.pdf)
-```
-
-## Built-in Themes
-
-### Default Theme
-The standard theme with borders, backgrounds, and distinct styling for each link type.
-
+### `default`
+Standard buttons with borders and backgrounds
 ````markdown
 ```menu
-class: default
-[[Home]]
-[Google](https://google.com)
-[Documents](file:///C:/Users/YourName/Documents)
+layout: default
+[[Dashboard]]
+[GitHub](https://github.com)
+[Files](file:///C:/Users/Documents)
 ```
 ````
 
-### Minimal Theme
-Clean, text-only appearance with subtle color differentiation.
-
+### `minimal`
+Clean text links with subtle colors
 ````markdown
 ```menu
-class: minimal
-[[Home]]
-[Google](https://google.com)
-[Documents](file:///C:/Users/YourName/Documents)
+layout: minimal
+[[Notes]]
+[Web](https://example.com)
+[Folder](file:///C:/Projects)
 ```
 ````
 
-
-
-## Custom Styling
-
-Create your own themes by adding CSS to your vault's snippets:
-
-```css
-.menu-container.my-custom-theme {
-    display: flex;
-    gap: 2em;
-    padding: 1em;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    border-radius: 10px;
-}
-
-.menu-container.my-custom-theme a {
-    color: white;
-    text-decoration: none;
-    padding: 0.5em 1em;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-}
-
-.menu-container.my-custom-theme a:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
-}
-```
-
-Then use it in your menu:
-
+### `slate`
+Solid background buttons
 ````markdown
 ```menu
-class: my-custom-theme
+layout: slate
 [[Home]]
-[Google](https://google.com)
+[Links](https://obsidian.md)
 ```
 ````
 
-## Development
-
-### Setup
-```bash
-npm install
-npm run dev    # Start development with auto-rebuild
-npm run build  # Build for production
+### `horizon`
+Modern outlined style
+````markdown
+```menu
+layout: horizon
+[[Dashboard]]
+[Resources](https://example.com)
 ```
+````
 
-## Technical Details
+### `aether`
+Grid layout with equal-width items
+````markdown
+```menu
+layout: aether
+[[Projects]]
+[GitHub](https://github.com)
+[Documents](file:///C:/Users/Documents)
+```
+````
 
-### Link Processing
-- **Internal links**: Use Obsidian's `data-href` attribute for proper navigation
-- **External links**: Open in new tab with security attributes
-- **File links**: Use Electron's shell API to open with system default applications
+## Link Types
 
-### CSS Architecture
-- Base class: `.menu-container`
-- Theme classes: `.menu-container.{theme-name}`
-- Link type classes: `.menu-internal-link`, `.menu-external-link`, `.menu-file-link`
+- **Internal**: `[[Note Name]]` or `[[Note Name|Display Text]]`
+- **External**: `[Display Text](https://example.com)`
+- **Files**: `[Display Text](file:///C:/path/to/file)`
 
-## License
+## Color Customization
 
-MIT License - feel free to modify and distribute.
+Add color properties using YAML syntax:
+
+````markdown
+```menu
+layout: default
+bg: #1a1a1a
+text: #ffffff
+accent: #ff6b6b
+border: #333333
+[[Home]]
+[GitHub](https://github.com)
+```
+````
+
+### Global Color Variables
+- `bg`: Background color
+- `text`: Text color
+- `accent`: Hover/accent color
+- `border`: Border color
+- `hover-bg`: Hover background
+- `hover-border`: Hover border color
+- `font`: Font family
+
+### Link-Type Specific Colors
+Customize each link type individually:
+
+````markdown
+```menu
+layout: minimal
+internal-text: #00ff00
+external-text: #ff6600
+file-text: #0066ff
+internal-font: "Arial"
+external-font: "Georgia"
+[[Internal Link]]
+[External Link](https://example.com)
+[File Link](file:///C:/Documents)
+```
+````
+
+**Available for each type** (`internal`, `external`, `file`):
+- `{type}-text`: Text color
+- `{type}-bg`: Background color
+- `{type}-border`: Border color
+- `{type}-font`: Font family
+- `{type}-accent`: Hover text color
+- `{type}-hover-bg`: Hover background
+- `{type}-hover-border`: Hover border color
+
+## Advanced Examples
+
+### Gradient Background
+````markdown
+```menu
+layout: horizon
+bg: linear-gradient(45deg, #667eea, #764ba2)
+text: white
+accent: #ffd700
+[[Dashboard]]
+[Projects](https://github.com)
+```
+````
+
+### Different Fonts Per Link Type
+````markdown
+```menu
+layout: default
+font: "Inter"
+internal-font: "Fira Code"
+external-font: "Georgia"
+file-font: "Arial"
+[[Code Notes]]
+[Articles](https://medium.com)
+[Local Files](file:///C:/Documents)
+```
+````
+
+## Notes
+
+- Use either `layout:` or `class:` (both work the same)
+- File paths use `file://` protocol
+- Colors support hex, rgb, hsl, CSS variables, and gradients
+- Font names with spaces need quotes: `font: "Work Sans"`

@@ -1,11 +1,9 @@
 {
 	"id": "menu-plugin",
-	"name": "Menu Plugin",
+	"name": "Obsidian Menus",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Create custom menus using code blocks with links and CSS styling.",
-	"author": "Your Name",
-	"authorUrl": "https://yourwebsite.com",
-	"fundingUrl": "https://yourfundingurl.com",
+	"author": "Olivier Legendre",
 	"isDesktopOnly": false
 }

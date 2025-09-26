@@ -1,0 +1,186 @@
+/* Special styles to hide the border and </> icon on hover */
+
+.markdown-source-view.mod-cm6 .cm-embed-block:not(.cm-table-widget, .cm-lang-base):has(.menu-container):hover {
+    border-width: 0;
+    outline: 0;
+    box-shadow: var(--background-primary) 0 0 0 1px inset !important;
+    background-color: transparent !important;
+    outline: 1px solid transparent;
+
+    .edit-block-button {
+        top: 0em;
+        bottom: 0;
+        left: 0;
+        width: 0.5rem;
+        padding: 0;
+
+        cursor: help;
+
+        svg {
+            display: none;
+        }
+    }
+}
+
+/* Default style variant */
+
+.menu-container.default {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+    border-radius: 6px;
+    background-color: var(--background-primary);
+
+    a {
+        padding: 0.6em 1em;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        border: 1px solid var(--background-modifier-border);
+        color: var(--text-normal);
+
+        &:hover {
+            color: var(--text-accent);
+            /* background-color: var(--background-modifier-hover); */
+            border-color: var(--text-accent);
+        }
+    }
+}
+
+/* .menu-file-link
+.menu-external-link
+.menu-internal-link */
+
+.menu-container {
+    transition: 125ms;
+
+    a {
+        transition: 125ms;
+    }
+}
+
+/* Minimal style variant */
+.menu-container.minimal {
+    display: flex;
+    gap: 0.2em;
+    flex-wrap: wrap;
+    transition: 125ms;
+
+
+    a {
+        padding: 0.4em 0.8em;
+        text-decoration: none;
+        border-radius: 3px;
+        transition: color 0.15s ease;
+        font-size: 0.9em;
+        font-weight: normal;
+
+        &:hover {
+            background-color: var(--background-secondary);
+            color: var(--text-accent);
+        }
+    }
+
+    a.menu-internal-link {
+        color: var(--text-accent);
+
+        &:hover {
+            color: var(--text-accent-hover);
+        }
+    }
+
+    a.menu-external-link {
+        color: var(--text-faint);
+
+        &:hover {
+            color: var(--text-normal);
+        }
+    }
+
+    a.menu-file-link {
+        color: var(--text-faint);
+
+        &:hover {
+            color: var(--text-normal);
+        }
+    }
+}
+
+/* Minimal style variant */
+.menu-container.slate {
+    display: flex;
+    gap: 0.2em;
+    flex-wrap: wrap;
+
+
+    a {
+        padding: 0.4em 0.8em;
+        text-decoration: none;
+        border-radius: 3px;
+        transition: color 0.15s ease;
+        font-size: 0.9em;
+        font-weight: normal;
+        background-color: var(--background-secondary);
+        border: 1px solid var(--background-secondary);
+        color: var(--text-faint);
+
+
+        &:hover {
+            background-color: var(--background-secondary);
+            color: var(--text-accentl);
+            border: 1px solid var(--text-accent);
+        }
+    }
+
+}
+
+
+.menu-container.horizon {
+    display: flex;
+    gap: 0.5em;
+    flex-wrap: wrap;
+    border-radius: 8px;
+    background-color: var(--background-primary);
+
+    a {
+        font-family: 'Space Grotesk', Inter, sans-serif;
+        font-size: var(--fs, 1.1rem);
+        white-space: nowrap;
+        color: var(--cyan-500, darkcyan);
+        text-align: center;
+        text-decoration: none;
+        text-align: center;
+
+        border: 1px solid var(--cyan-500, darkcyan);
+        border-radius: 3px;
+        padding-block: var(--size-2, 0.5em);
+        padding-inline: var(--size-3, 2em);
+        transition: 250ms;
+
+        &:hover {
+            color: var(--text-accent);
+            /* background-color: var(--background-modifier-hover); */
+            border: 1px solid var(--orange-500, darkorange);
+            color: var(--orange-500, darkorange);
+        }
+    }
+}
+
+.menu-container.aether {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(150px, 1fr));
+
+    gap: 0.5em;
+
+    a {
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0.5em 1em;
+        border-radius: 8px;
+
+        border: 1px solid var(--background-modifier-border);
+    }
+}

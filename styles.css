@@ -1,6 +1,6 @@
 /* Special styles to hide the border and </> icon on hover */
 
-.markdown-source-view.mod-cm6 .cm-embed-block:not(.cm-table-widget, .cm-lang-base):has(.menu-container):hover {
+.markdown-source-view.mod-cm6 .cm-embed-block:not(.cm-table-widget, .cm-lang-base):has(.menu-container[data-layout]):hover {
     border-width: 0;
     outline: 0;
     box-shadow: var(--background-primary) 0 0 0 1px inset !important;
@@ -22,8 +22,8 @@
     }
 }
 
-.menu-container,
-.menu-container a {
+.menu-container[data-layout],
+.menu-container[data-layout] a {
     transition: 125ms;
 }
 
@@ -35,12 +35,11 @@
 
 /* Default style variant */
 
-.menu-container.default {
+.menu-container[data-layout='default'] {
     display: flex;
-    gap: 1em;
+    gap: 0.7em;
     flex-wrap: wrap;
     border-radius: 6px;
-    background-color: var(--bg, var(--background-primary));
     font-family: var(--font, inherit);
 
     a {
@@ -51,49 +50,51 @@
         font-weight: 500;
         border: 1px solid var(--border, var(--background-modifier-border));
         color: var(--text, var(--text-normal));
+        background: var(--bg, var(--background-primary));
         font-family: var(--font, inherit);
 
         &:hover {
             color: var(--hover-text, var(--accent, var(--text-accent)));
             border-color: var(--hover-border, var(--accent, var(--text-accent)));
+            background: var(--hover-bg, transparent);
         }
 
         &.menu-internal-link {
             color: var(--internal-text, var(--text, var(--text-normal)));
             border-color: var(--internal-border, var(--border, var(--background-modifier-border)));
-            background-color: var(--internal-bg, transparent);
+            background: var(--internal-bg, var(--bg, var(--background-primary)));
             font-family: var(--internal-font, var(--font, inherit));
 
             &:hover {
                 color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--internal-hover-bg, var(--hover-bg, transparent));
+                background: var(--internal-hover-bg, var(--hover-bg, transparent));
             }
         }
 
         &.menu-external-link {
             color: var(--external-text, var(--text, var(--text-normal)));
             border-color: var(--external-border, var(--border, var(--background-modifier-border)));
-            background-color: var(--external-bg, transparent);
+            background: var(--external-bg, var(--bg, var(--background-primary)));
             font-family: var(--external-font, var(--font, inherit));
 
             &:hover {
                 color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--external-hover-bg, var(--hover-bg, transparent));
+                background: var(--external-hover-bg, var(--hover-bg, transparent));
             }
         }
 
         &.menu-file-link {
             color: var(--file-text, var(--text, var(--text-normal)));
             border-color: var(--file-border, var(--border, var(--background-modifier-border)));
-            background-color: var(--file-bg, transparent);
+            background: var(--file-bg, var(--bg, var(--background-primary)));
             font-family: var(--file-font, var(--font, inherit));
 
             &:hover {
                 color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--file-hover-bg, var(--hover-bg, transparent));
+                background: var(--file-hover-bg, var(--hover-bg, transparent));
             }
         }
     }
@@ -112,12 +113,11 @@
 
 
 /* Minimal style variant */
-.menu-container.minimal {
+.menu-container[data-layout='minimal'] {
     display: flex;
     gap: 0.2em;
     flex-wrap: wrap;
     transition: 125ms;
-    background-color: var(--bg, transparent);
     font-family: var(--font, inherit);
 
     a {
@@ -128,10 +128,11 @@
         font-size: 0.9em;
         font-weight: normal;
         color: var(--text, var(--text-normal));
+        background: var(--bg, transparent);
         font-family: var(--font, inherit);
 
         &:hover {
-            background-color: var(--hover-bg, var(--background-secondary));
+            background: var(--hover-bg, var(--background-secondary));
             color: var(--hover-text, var(--accent, var(--text-accent)));
         }
 
@@ -141,7 +142,7 @@
 
             &:hover {
                 color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--internal-hover, var(--text-accent-hover)))));
-                background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
+                background: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
 
@@ -151,7 +152,7 @@
 
             &:hover {
                 color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--external-hover, var(--text-normal)))));
-                background-color: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
+                background: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
 
@@ -161,18 +162,17 @@
 
             &:hover {
                 color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--file-hover, var(--text-normal)))));
-                background-color: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
+                background: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
     }
 }
 
 /* Minimal style variant */
-.menu-container.slate {
+.menu-container[data-layout='slate'] {
     display: flex;
     gap: 0.2em;
     flex-wrap: wrap;
-    background-color: var(--bg, transparent);
     font-family: var(--font, inherit);
 
     a {
@@ -182,13 +182,13 @@
         transition: color 0.15s ease;
         font-size: 0.9em;
         font-weight: normal;
-        background-color: var(--item-bg, var(--background-secondary));
+        background: var(--bg, var(--background-secondary));
         border: 1px solid var(--border, var(--background-secondary));
         color: var(--text, var(--text-faint));
         font-family: var(--font, inherit);
 
         &:hover {
-            background-color: var(--hover-bg, var(--background-secondary));
+            background: var(--hover-bg, var(--background-secondary));
             color: var(--hover-text, var(--accent, var(--text-accent)));
             border: 1px solid var(--hover-border, var(--accent, var(--text-accent)));
         }
@@ -196,51 +196,50 @@
         &.menu-internal-link {
             color: var(--internal-text, var(--text, var(--text-faint)));
             border-color: var(--internal-border, var(--border, var(--background-secondary)));
-            background-color: var(--internal-bg, var(--item-bg, var(--background-secondary)));
+            background: var(--internal-bg, var(--bg, var(--background-secondary)));
             font-family: var(--internal-font, var(--font, inherit));
 
             &:hover {
                 color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
+                background: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
 
         &.menu-external-link {
             color: var(--external-text, var(--text, var(--text-faint)));
             border-color: var(--external-border, var(--border, var(--background-secondary)));
-            background-color: var(--external-bg, var(--item-bg, var(--background-secondary)));
+            background: var(--external-bg, var(--bg, var(--background-secondary)));
             font-family: var(--external-font, var(--font, inherit));
 
             &:hover {
                 color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
+                background: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
 
         &.menu-file-link {
             color: var(--file-text, var(--text, var(--text-faint)));
             border-color: var(--file-border, var(--border, var(--background-secondary)));
-            background-color: var(--file-bg, var(--item-bg, var(--background-secondary)));
+            background: var(--file-bg, var(--bg, var(--background-secondary)));
             font-family: var(--file-font, var(--font, inherit));
 
             &:hover {
                 color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
+                background: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
     }
 }
 
 
-.menu-container.horizon {
+.menu-container[data-layout='horizon'] {
     display: flex;
     gap: 0.5em;
     flex-wrap: wrap;
     border-radius: 8px;
-    background-color: var(--bg, var(--background-primary));
     font-family: var(--font, 'Space Grotesk', Inter, sans-serif);
 
     a {
@@ -254,49 +253,51 @@
         border-radius: 3px;
         padding-block: var(--size-2, 0.5em);
         padding-inline: var(--size-3, 2em);
+        background: var(--bg, transparent);
         transition: 250ms;
 
         &:hover {
             color: var(--hover-text, var(--accent, var(--orange-500, darkorange)));
             border: 1px solid var(--hover-border, var(--accent, var(--orange-500, darkorange)));
+            background: var(--hover-bg, transparent);
         }
 
         &.menu-internal-link {
             color: var(--internal-text, var(--text, var(--cyan-500, darkcyan)));
             border-color: var(--internal-border, var(--border, var(--cyan-500, darkcyan)));
-            background-color: var(--internal-bg, transparent);
+            background: var(--internal-bg, var(--bg, transparent));
             font-family: var(--internal-font, var(--font, 'Space Grotesk', Inter, sans-serif));
 
             &:hover {
                 color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--orange-500, darkorange)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
-                background-color: var(--internal-hover-bg, var(--hover-bg, transparent));
+                background: var(--internal-hover-bg, var(--hover-bg, transparent));
             }
         }
 
         &.menu-external-link {
             color: var(--external-text, var(--text, var(--cyan-500, darkcyan)));
             border-color: var(--external-border, var(--border, var(--cyan-500, darkcyan)));
-            background-color: var(--external-bg, transparent);
+            background: var(--external-bg, var(--bg, transparent));
             font-family: var(--external-font, var(--font, 'Space Grotesk', Inter, sans-serif));
 
             &:hover {
                 color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--orange-500, darkorange)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
-                background-color: var(--external-hover-bg, var(--hover-bg, transparent));
+                background: var(--external-hover-bg, var(--hover-bg, transparent));
             }
         }
 
         &.menu-file-link {
             color: var(--file-text, var(--text, var(--cyan-500, darkcyan)));
             border-color: var(--file-border, var(--border, var(--cyan-500, darkcyan)));
-            background-color: var(--file-bg, transparent);
+            background: var(--file-bg, var(--bg, transparent));
             font-family: var(--file-font, var(--font, 'Space Grotesk', Inter, sans-serif));
 
             &:hover {
                 color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--orange-500, darkorange)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
-                background-color: var(--file-hover-bg, var(--hover-bg, transparent));
+                background: var(--file-hover-bg, var(--hover-bg, transparent));
             }
         }
     }
@@ -308,11 +309,10 @@
     }
 }
 
-.menu-container.aether {
+.menu-container[data-layout='aether'] {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 0.5em;
-    background-color: var(--bg, transparent);
     font-family: var(--font, inherit);
 
     a {
@@ -323,50 +323,51 @@
         border-radius: 8px;
         color: var(--text, var(--text-normal));
         border: 1px solid var(--border, var(--background-modifier-border));
+        background: var(--bg, transparent);
         font-family: var(--font, inherit);
 
         &:hover {
             color: var(--hover-text, var(--accent, var(--text-accent)));
             border-color: var(--hover-border, var(--accent, var(--text-accent)));
-            background-color: var(--hover-bg, var(--background-modifier-hover));
+            background: var(--hover-bg, var(--background-modifier-hover));
         }
 
         &.menu-internal-link {
             color: var(--internal-text, var(--text, var(--text-normal)));
             border-color: var(--internal-border, var(--border, var(--background-modifier-border)));
-            background-color: var(--internal-bg, transparent);
+            background: var(--internal-bg, var(--bg, transparent));
             font-family: var(--internal-font, var(--font, inherit));
 
             &:hover {
                 color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
+                background: var(--internal-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
             }
         }
 
         &.menu-external-link {
             color: var(--external-text, var(--text, var(--text-normal)));
             border-color: var(--external-border, var(--border, var(--background-modifier-border)));
-            background-color: var(--external-bg, transparent);
+            background: var(--external-bg, var(--bg, transparent));
             font-family: var(--external-font, var(--font, inherit));
 
             &:hover {
                 color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--external-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
+                background: var(--external-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
             }
         }
 
         &.menu-file-link {
             color: var(--file-text, var(--text, var(--text-normal)));
             border-color: var(--file-border, var(--border, var(--background-modifier-border)));
-            background-color: var(--file-bg, transparent);
+            background: var(--file-bg, var(--bg, transparent));
             font-family: var(--file-font, var(--font, inherit));
 
             &:hover {
                 color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
-                background-color: var(--file-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
+                background: var(--file-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
             }
         }
     }

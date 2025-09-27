@@ -54,7 +54,7 @@
         font-family: var(--font, inherit);
 
         &:hover {
-            color: var(--accent, var(--text-accent));
+            color: var(--hover-text, var(--accent, var(--text-accent)));
             border-color: var(--hover-border, var(--accent, var(--text-accent)));
         }
 
@@ -65,7 +65,7 @@
             font-family: var(--internal-font, var(--font, inherit));
 
             &:hover {
-                color: var(--internal-accent, var(--accent, var(--text-accent)));
+                color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--internal-hover-bg, var(--hover-bg, transparent));
             }
@@ -78,7 +78,7 @@
             font-family: var(--external-font, var(--font, inherit));
 
             &:hover {
-                color: var(--external-accent, var(--accent, var(--text-accent)));
+                color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--external-hover-bg, var(--hover-bg, transparent));
             }
@@ -91,7 +91,7 @@
             font-family: var(--file-font, var(--font, inherit));
 
             &:hover {
-                color: var(--file-accent, var(--accent, var(--text-accent)));
+                color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--file-hover-bg, var(--hover-bg, transparent));
             }
@@ -132,7 +132,7 @@
 
         &:hover {
             background-color: var(--hover-bg, var(--background-secondary));
-            color: var(--accent, var(--text-accent));
+            color: var(--hover-text, var(--accent, var(--text-accent)));
         }
 
         &.menu-internal-link {
@@ -140,7 +140,7 @@
             font-family: var(--internal-font, var(--font, inherit));
 
             &:hover {
-                color: var(--internal-accent, var(--internal-hover, var(--text-accent-hover)));
+                color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--internal-hover, var(--text-accent-hover)))));
                 background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
@@ -150,7 +150,7 @@
             font-family: var(--external-font, var(--font, inherit));
 
             &:hover {
-                color: var(--external-accent, var(--external-hover, var(--text-normal)));
+                color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--external-hover, var(--text-normal)))));
                 background-color: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
@@ -160,7 +160,7 @@
             font-family: var(--file-font, var(--font, inherit));
 
             &:hover {
-                color: var(--file-accent, var(--file-hover, var(--text-normal)));
+                color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--file-hover, var(--text-normal)))));
                 background-color: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
         }
@@ -189,7 +189,7 @@
 
         &:hover {
             background-color: var(--hover-bg, var(--background-secondary));
-            color: var(--accent, var(--text-accent));
+            color: var(--hover-text, var(--accent, var(--text-accent)));
             border: 1px solid var(--hover-border, var(--accent, var(--text-accent)));
         }
 
@@ -200,7 +200,7 @@
             font-family: var(--internal-font, var(--font, inherit));
 
             &:hover {
-                color: var(--internal-accent, var(--accent, var(--text-accent)));
+                color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
@@ -213,7 +213,7 @@
             font-family: var(--external-font, var(--font, inherit));
 
             &:hover {
-                color: var(--external-accent, var(--accent, var(--text-accent)));
+                color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--external-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
@@ -226,7 +226,7 @@
             font-family: var(--file-font, var(--font, inherit));
 
             &:hover {
-                color: var(--file-accent, var(--accent, var(--text-accent)));
+                color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--file-hover-bg, var(--hover-bg, var(--background-secondary)));
             }
@@ -257,7 +257,7 @@
         transition: 250ms;
 
         &:hover {
-            color: var(--accent, var(--orange-500, darkorange));
+            color: var(--hover-text, var(--accent, var(--orange-500, darkorange)));
             border: 1px solid var(--hover-border, var(--accent, var(--orange-500, darkorange)));
         }
 
@@ -268,7 +268,7 @@
             font-family: var(--internal-font, var(--font, 'Space Grotesk', Inter, sans-serif));
 
             &:hover {
-                color: var(--internal-accent, var(--accent, var(--orange-500, darkorange)));
+                color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--orange-500, darkorange)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
                 background-color: var(--internal-hover-bg, var(--hover-bg, transparent));
             }
@@ -281,7 +281,7 @@
             font-family: var(--external-font, var(--font, 'Space Grotesk', Inter, sans-serif));
 
             &:hover {
-                color: var(--external-accent, var(--accent, var(--orange-500, darkorange)));
+                color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--orange-500, darkorange)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
                 background-color: var(--external-hover-bg, var(--hover-bg, transparent));
             }
@@ -294,7 +294,7 @@
             font-family: var(--file-font, var(--font, 'Space Grotesk', Inter, sans-serif));
 
             &:hover {
-                color: var(--file-accent, var(--accent, var(--orange-500, darkorange)));
+                color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--orange-500, darkorange)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--orange-500, darkorange))));
                 background-color: var(--file-hover-bg, var(--hover-bg, transparent));
             }
@@ -326,7 +326,7 @@
         font-family: var(--font, inherit);
 
         &:hover {
-            color: var(--accent, var(--text-accent));
+            color: var(--hover-text, var(--accent, var(--text-accent)));
             border-color: var(--hover-border, var(--accent, var(--text-accent)));
             background-color: var(--hover-bg, var(--background-modifier-hover));
         }
@@ -338,7 +338,7 @@
             font-family: var(--internal-font, var(--font, inherit));
 
             &:hover {
-                color: var(--internal-accent, var(--accent, var(--text-accent)));
+                color: var(--internal-hover-text, var(--internal-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--internal-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--internal-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
             }
@@ -351,7 +351,7 @@
             font-family: var(--external-font, var(--font, inherit));
 
             &:hover {
-                color: var(--external-accent, var(--accent, var(--text-accent)));
+                color: var(--external-hover-text, var(--external-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--external-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--external-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
             }
@@ -364,7 +364,7 @@
             font-family: var(--file-font, var(--font, inherit));
 
             &:hover {
-                color: var(--file-accent, var(--accent, var(--text-accent)));
+                color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background-color: var(--file-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
             }

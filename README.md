@@ -86,7 +86,7 @@ Add color properties using YAML syntax:
 layout: default
 bg: #1a1a1a
 text: #ffffff
-accent: #ff6b6b
+hover-text: #ff6b6b
 border: #333333
 [[Home]]
 [GitHub](https://github.com)
@@ -96,8 +96,8 @@ border: #333333
 ### Global Color Variables
 - `bg`: Background color
 - `text`: Text color
-- `accent`: Hover/accent color
 - `border`: Border color
+- `hover-text`: Hover text color
 - `hover-bg`: Hover background
 - `hover-border`: Hover border color
 - `font`: Font family
@@ -124,7 +124,7 @@ external-font: "Georgia"
 - `{type}-bg`: Background color
 - `{type}-border`: Border color
 - `{type}-font`: Font family
-- `{type}-accent`: Hover text color
+- `{type}-hover-text`: Hover text color
 - `{type}-hover-bg`: Hover background
 - `{type}-hover-border`: Hover border color
 
@@ -136,7 +136,7 @@ external-font: "Georgia"
 layout: horizon
 bg: linear-gradient(45deg, #667eea, #764ba2)
 text: white
-accent: #ffd700
+hover-text: #ffd700
 [[Dashboard]]
 [Projects](https://github.com)
 ```

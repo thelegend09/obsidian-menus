@@ -54,7 +54,14 @@ export default class MenuPlugin extends Plugin {
 			// Apply custom colors as CSS variables
 			if (Object.keys(colors).length > 0) {
 				for (const [key, value] of Object.entries(colors)) {
-					container.style.setProperty(`--${key}`, value);
+					// Replace 'accent' with 'hover-text' for consistency
+					let cssKey = key.replace(/accent/g, 'hover-text');
+					container.style.setProperty(`--${cssKey}`, value);
+				}
+				// Example: ensure hover-text is set and add a comment for usage
+				if (colors['hover-text']) {
+					container.style.setProperty('--hover-text', colors['hover-text']);
+					// To use in CSS: a:hover { color: var(--hover-text); }
 				}
 			}
  
@@ -73,6 +80,14 @@ export default class MenuPlugin extends Plugin {
 						attr: { 'data-href': href }
 					});
 					a.addClass('menu-internal-link');
+					a.style.cursor = 'pointer';
+					a.addEventListener('click', (e) => {
+						e.preventDefault();
+						const vaultName = this.app.vault.getName();
+						const encodedFile = encodeURIComponent(href);
+						const uri = `obsidian://open?vault=${encodeURIComponent(vaultName)}&file=${encodedFile}`;
+						window.open(uri);
+					});
 				} else if (link.match(/^\[.*\]\(.*\)$/)) {
 					// External link
 					const match = link.match(/^\[(.*)\]\((.*)\)$/);

@@ -29,8 +29,13 @@ __export(main_exports, {
 module.exports = __toCommonJS(main_exports);
 var import_obsidian = require("obsidian");
 var { shell } = require("electron");
+var DEFAULT_SETTINGS = {
+  mySetting: "default"
+};
 var MenuPlugin = class extends import_obsidian.Plugin {
   async onload() {
+    await this.loadSettings();
+    this.addSettingTab(new MenuPluginSettingTab(this.app, this));
     this.registerMarkdownCodeBlockProcessor("menu", (source, el, ctx) => {
       const lines = source.trim().split("\n");
       let layoutOrClass = "";
@@ -149,10 +154,7 @@ var MenuPlugin = class extends import_obsidian.Plugin {
           a.style.cursor = "pointer";
           a.addEventListener("click", (e) => {
             e.preventDefault();
-            const vaultName = this.app.vault.getName();
-            const encodedFile = encodeURIComponent(href);
-            const uri = `obsidian://open?vault=${encodeURIComponent(vaultName)}&file=${encodedFile}`;
-            window.open(uri);
+            this.app.workspace.openLinkText(href, ctx.sourcePath, false);
           });
         } else if (link.match(/^\[.*\]\(.*\)$/)) {
           const match = link.match(/^\[(.*)\]\((.*)\)$/);
@@ -196,6 +198,52 @@ var MenuPlugin = class extends import_obsidian.Plugin {
     });
   }
   onunload() {
+  }
+  async loadSettings() {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+  }
+  async saveSettings() {
+    await this.saveData(this.settings);
+  }
+};
+var MenuPluginSettingTab = class extends import_obsidian.PluginSettingTab {
+  constructor(app, plugin) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
+  display() {
+    const { containerEl } = this;
+    containerEl.empty();
+    containerEl.createEl("h2", { text: "Menu Plugin Settings" });
+    new import_obsidian.Setting(containerEl).setName("Setting #1").setDesc("It's a secret").addText((text) => text.setPlaceholder("Enter your secret").setValue(this.plugin.settings.mySetting).onChange(async (value) => {
+      this.plugin.settings.mySetting = value;
+      await this.plugin.saveSettings();
+    }));
+    containerEl.createEl("hr");
+    containerEl.createEl("h3", { text: "Usage Guide" });
+    const doc = containerEl.createEl("div");
+    doc.createEl("p", { text: "Create a custom menu using the `menu` code block." });
+    doc.createEl("h4", { text: "Example" });
+    const pre = doc.createEl("pre");
+    pre.createEl("code", {
+      text: `\`\`\`menu
+layout: slate
+bg: #333
+text: white
+[[Internal Link]]
+[External Link](https://example.com)
+\`\`\``
+    });
+    doc.createEl("h4", { text: "Supported Properties" });
+    const ul = doc.createEl("ul");
+    ul.createEl("li", { text: "layout: default, minimal, slate, horizon, aether" });
+    ul.createEl("li", { text: "class: custom CSS classes" });
+    ul.createEl("li", { text: "colors: bg, text, border, font (supports hover- prefix)" });
+    doc.createEl("h4", { text: "Link Types" });
+    const ul2 = doc.createEl("ul");
+    ul2.createEl("li", { text: "[[Internal Link]] - Opens Obsidian note" });
+    ul2.createEl("li", { text: "[External Link](https://...) - Opens in browser" });
+    ul2.createEl("li", { text: "[File Link](file://...) - Opens local file/folder" });
   }
 };
 // Annotate the CommonJS export names for ESM import in node:

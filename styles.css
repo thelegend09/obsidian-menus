@@ -128,6 +128,7 @@
         font-size: 0.9em;
         font-weight: normal;
         color: var(--text, var(--text-normal));
+        border: 1px solid var(--border, var(--background-modifier-border));
         background: var(--bg, transparent);
         font-family: var(--font, inherit);
 

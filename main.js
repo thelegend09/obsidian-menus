@@ -41,20 +41,54 @@ var MenuPlugin = class extends import_obsidian.Plugin {
       let layoutOrClass = "";
       let colors = {};
       const links = [];
+      let dataviewQuery = "";
       for (const line of lines) {
         const trimmed = line.trim();
         if (trimmed.startsWith("layout:") || trimmed.startsWith("class:")) {
           const colonIndex = trimmed.indexOf(":");
           layoutOrClass = trimmed.substring(colonIndex + 1).trim();
+        } else if (trimmed.startsWith("dataview:") || trimmed.startsWith("dv:")) {
+          const colonIndex = trimmed.indexOf(":");
+          dataviewQuery = trimmed.substring(colonIndex + 1).trim();
+        } else if (trimmed.includes(":") && !trimmed.startsWith("[") && !trimmed.startsWith("[[") && !dataviewQuery) {
+          const [key, ...valueParts] = trimmed.split(":");
+          const value = valueParts.join(":").trim();
+          if (key && value && !key.includes("//") && !key.includes("http")) {
+            colors[key.trim()] = value;
+          }
+        } else if (trimmed && !trimmed.includes(":") && !dataviewQuery) {
+          links.push(trimmed);
+        } else if (trimmed.startsWith("[") && !dataviewQuery) {
+          links.push(trimmed);
+        } else if (dataviewQuery) {
+          dataviewQuery += "\n" + line;
+        }
+      }
+      layoutOrClass = "";
+      colors = {};
+      links.length = 0;
+      dataviewQuery = "";
+      let isDataviewBlock = false;
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (isDataviewBlock) {
+          dataviewQuery += "\n" + line;
+          continue;
+        }
+        if (trimmed.startsWith("layout:") || trimmed.startsWith("class:")) {
+          const colonIndex = trimmed.indexOf(":");
+          layoutOrClass = trimmed.substring(colonIndex + 1).trim();
+        } else if (trimmed.startsWith("dataview:") || trimmed.startsWith("dv:")) {
+          const colonIndex = trimmed.indexOf(":");
+          dataviewQuery = trimmed.substring(colonIndex + 1).trim();
+          isDataviewBlock = true;
         } else if (trimmed.includes(":") && !trimmed.startsWith("[") && !trimmed.startsWith("[[")) {
           const [key, ...valueParts] = trimmed.split(":");
           const value = valueParts.join(":").trim();
           if (key && value && !key.includes("//") && !key.includes("http")) {
             colors[key.trim()] = value;
           }
-        } else if (trimmed && !trimmed.includes(":")) {
-          links.push(trimmed);
-        } else if (trimmed.startsWith("[")) {
+        } else if (trimmed) {
           links.push(trimmed);
         }
       }
@@ -183,7 +217,6 @@ var MenuPlugin = class extends import_obsidian.Plugin {
                   if (filePath.startsWith("/") && filePath.charAt(2) === ":") {
                     filePath = filePath.substring(1);
                   }
-                  console.log("Opening file path:", filePath);
                   shell.openPath(filePath);
                 } catch (error) {
                   console.error("Failed to open file:", error);
@@ -194,6 +227,37 @@ var MenuPlugin = class extends import_obsidian.Plugin {
             });
           }
         }
+      }
+      if (dataviewQuery) {
+        const dvContainer = container.createDiv({ cls: "menu-dataview-container" });
+        import_obsidian.MarkdownRenderer.render(
+          this.app,
+          `\`\`\`dataview
+${dataviewQuery}
+\`\`\``,
+          dvContainer,
+          ctx.sourcePath,
+          this
+        );
+        const observer = new MutationObserver((mutations) => {
+          for (const mutation of mutations) {
+            if (mutation.type === "childList") {
+              const links2 = dvContainer.querySelectorAll("a");
+              links2.forEach((link) => {
+                if (link.hasClass("internal-link")) {
+                  link.addClass("menu-internal-link");
+                  if (!selectedLayout)
+                    applyInlineBaseStyles(link, "internal");
+                } else {
+                  link.addClass("menu-external-link");
+                  if (!selectedLayout)
+                    applyInlineBaseStyles(link, "external");
+                }
+              });
+            }
+          }
+        });
+        observer.observe(dvContainer, { childList: true, subtree: true });
       }
     });
   }

@@ -35,12 +35,18 @@
 
 /* Default style variant */
 
-.menu-container[data-layout='default'] {
+.menu-container[data-layout='default']:has(:not(.menu-dataview-container)),
+.menu-container[data-layout='default'] .menu-dataview-container {
     display: flex;
-    gap: 0.7em;
+    --gap: 0.7em;
+    gap: var(--gap);
     flex-wrap: wrap;
     border-radius: 6px;
     font-family: var(--font, inherit);
+
+    /* ul.list-view-ul {
+        gap: 2em !important;
+    } */
 
     a {
         padding: 0.6em 1em;
@@ -113,9 +119,11 @@
 
 
 /* Minimal style variant */
-.menu-container[data-layout='minimal'] {
+.menu-container[data-layout='minimal']:has(:not(.menu-dataview-container)),
+.menu-container[data-layout='minimal'] .menu-dataview-container {
     display: flex;
-    gap: 0.2em;
+    --gap: 0.2em;
+    gap: var(--gap);
     flex-wrap: wrap;
     transition: 125ms;
     font-family: var(--font, inherit);
@@ -128,7 +136,6 @@
         font-size: 0.9em;
         font-weight: normal;
         color: var(--text, var(--text-normal));
-        border: 1px solid var(--border, var(--background-modifier-border));
         background: var(--bg, transparent);
         font-family: var(--font, inherit);
 
@@ -170,9 +177,11 @@
 }
 
 /* Minimal style variant */
-.menu-container[data-layout='slate'] {
+.menu-container[data-layout='slate']:has(:not(.menu-dataview-container)),
+.menu-container[data-layout='slate'] .menu-dataview-container {
     display: flex;
-    gap: 0.2em;
+    --gap: 0.2em;
+    gap: var(--gap);
     flex-wrap: wrap;
     font-family: var(--font, inherit);
 
@@ -238,7 +247,8 @@
 
 .menu-container[data-layout='horizon'] {
     display: flex;
-    gap: 0.5em;
+    --gap: 0.5em;
+    gap: var(--gap);
     flex-wrap: wrap;
     border-radius: 8px;
     font-family: var(--font, 'Space Grotesk', Inter, sans-serif);
@@ -369,6 +379,39 @@
                 color: var(--file-hover-text, var(--file-accent, var(--hover-text, var(--accent, var(--text-accent)))));
                 border-color: var(--file-hover-border, var(--hover-border, var(--accent, var(--text-accent))));
                 background: var(--file-hover-bg, var(--hover-bg, var(--background-modifier-hover)));
+            }
+        }
+    }
+}
+
+
+/* 
+ •·················•·················•
+    | Dataview |
+ •·················•·················•
+*/
+
+.menu-dataview-container {
+    display: contents;
+
+    ul {
+        margin-left: 0;
+        padding-left: 0;
+        flex-wrap: wrap;
+        display: flex;
+        gap: var(--gap);
+
+        li {
+            display: block;
+            margin-left: 0;
+            list-style-type: none;
+
+            span {
+                display: contents;
+
+                a {
+                    display: block;
+                }
             }
         }
     }

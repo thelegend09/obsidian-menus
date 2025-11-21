@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Plugin, PluginSettingTab, Setting, MarkdownRenderer } from 'obsidian';
 
 const { shell } = require('electron');
 
@@ -24,6 +24,7 @@ export default class MenuPlugin extends Plugin {
             let layoutOrClass = '';
             let colors: Record<string, string> = {};
             const links: string[] = [];
+            let dataviewQuery = '';
 
             // Parse YAML-like properties and links
             for (const line of lines) {
@@ -31,16 +32,61 @@ export default class MenuPlugin extends Plugin {
                 if (trimmed.startsWith('layout:') || trimmed.startsWith('class:')) {
                     const colonIndex = trimmed.indexOf(':');
                     layoutOrClass = trimmed.substring(colonIndex + 1).trim();
-                } else if (trimmed.includes(':') && !trimmed.startsWith('[') && !trimmed.startsWith('[[')) {
+                } else if (trimmed.startsWith('dataview:') || trimmed.startsWith('dv:')) {
+                    const colonIndex = trimmed.indexOf(':');
+                    dataviewQuery = trimmed.substring(colonIndex + 1).trim();
+                } else if (trimmed.includes(':') && !trimmed.startsWith('[') && !trimmed.startsWith('[[') && !dataviewQuery) {
                     // Parse color properties
                     const [key, ...valueParts] = trimmed.split(':');
                     const value = valueParts.join(':').trim();
                     if (key && value && !key.includes('//') && !key.includes('http')) {
                         colors[key.trim()] = value;
                     }
-                } else if (trimmed && !trimmed.includes(':')) {
+                } else if (trimmed && !trimmed.includes(':') && !dataviewQuery) {
                     links.push(trimmed);
-                } else if (trimmed.startsWith('[')) {
+                } else if (trimmed.startsWith('[') && !dataviewQuery) {
+                    links.push(trimmed);
+                } else if (dataviewQuery) {
+                    // If we already found a dataview start, append subsequent lines to it
+                    // This handles multi-line queries if the user didn't put it all on one line
+                    // But actually, the simple parsing above assumes one line per property.
+                    // For complex queries, we might need a better parser.
+                    // For now, let's assume the query might be multi-line if it started with dv:
+                    // But the loop iterates lines.
+                    // Let's adjust: if we are in "dataview mode", just add to query.
+                    dataviewQuery += '\n' + line;
+                }
+            }
+
+            // Re-parsing to handle multi-line dataview queries correctly
+            // The previous loop was a bit naive for multi-line. Let's do a cleaner pass.
+            layoutOrClass = '';
+            colors = {};
+            links.length = 0;
+            dataviewQuery = '';
+            let isDataviewBlock = false;
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (isDataviewBlock) {
+                    dataviewQuery += '\n' + line;
+                    continue;
+                }
+
+                if (trimmed.startsWith('layout:') || trimmed.startsWith('class:')) {
+                    const colonIndex = trimmed.indexOf(':');
+                    layoutOrClass = trimmed.substring(colonIndex + 1).trim();
+                } else if (trimmed.startsWith('dataview:') || trimmed.startsWith('dv:')) {
+                    const colonIndex = trimmed.indexOf(':');
+                    dataviewQuery = trimmed.substring(colonIndex + 1).trim();
+                    isDataviewBlock = true; // Assume rest of block is the query
+                } else if (trimmed.includes(':') && !trimmed.startsWith('[') && !trimmed.startsWith('[[')) {
+                    const [key, ...valueParts] = trimmed.split(':');
+                    const value = valueParts.join(':').trim();
+                    if (key && value && !key.includes('//') && !key.includes('http')) {
+                        colors[key.trim()] = value;
+                    }
+                } else if (trimmed) {
                     links.push(trimmed);
                 }
             }
@@ -55,33 +101,27 @@ export default class MenuPlugin extends Plugin {
             if (layoutOrClass) {
                 const tokens = layoutOrClass.split(/\s+/).filter(Boolean);
                 if (tokens.length) {
-                    // Allow built-in layout to appear anywhere in the list (e.g., "class: my-class horizon wide")
                     const builtInIndex = tokens.findIndex(t => builtInLayouts.has(t));
                     if (builtInIndex !== -1) {
                         selectedLayout = tokens[builtInIndex];
                         extraClasses = tokens.filter((_, i) => i !== builtInIndex);
                     } else {
-                        // Custom class mode: do not apply plugin CSS (no data-layout)
                         extraClasses = tokens;
                     }
                 }
             } else {
-                // No layout/class provided: use default built-in template
                 selectedLayout = 'default';
             }
 
-            // Apply selected built-in template via data attribute (gates plugin CSS)
             if (selectedLayout) {
                 container.setAttr('data-layout', selectedLayout);
             }
 
-            // Apply any extra classes (e.g., "wide" or user-provided classes)
             for (const cls of extraClasses) {
                 container.addClass(cls);
             }
 
-            // Apply custom properties (whitelist only: bg, text, border, font and their -hover variants,
-            // plus internal-, external-, file- prefixed versions). No raw CSS props allowed.
+            // Apply custom properties
             if (Object.keys(colors).length > 0) {
                 const baseKeys = new Set([
                     'bg', 'text', 'border', 'font',
@@ -89,13 +129,10 @@ export default class MenuPlugin extends Plugin {
                 ]);
                 const normalizeKey = (raw: string) => {
                     let s = raw.trim().toLowerCase();
-                    // Normalize synonyms/order for hover variants
                     s = s
-                        // Prefer "hover-*" (matches CSS)
                         .replace(/\btext-hover\b/g, 'hover-text')
                         .replace(/\bbg-hover\b/g, 'hover-bg')
                         .replace(/\bborder-hover\b/g, 'hover-border')
-                        // Old naming from earlier versions -> new "hover-*" order
                         .replace(/\binternal-text-hover\b/g, 'internal-hover-text')
                         .replace(/\binternal-bg-hover\b/g, 'internal-hover-bg')
                         .replace(/\binternal-border-hover\b/g, 'internal-hover-border')
@@ -105,7 +142,6 @@ export default class MenuPlugin extends Plugin {
                         .replace(/\bfile-text-hover\b/g, 'file-hover-text')
                         .replace(/\bfile-bg-hover\b/g, 'file-hover-bg')
                         .replace(/\bfile-border-hover\b/g, 'file-hover-border')
-                        // Back-compat for "accent" -> "hover-text"
                         .replace(/\baccent\b/g, 'hover-text')
                         .replace(/\binternal-accent\b/g, 'internal-hover-text')
                         .replace(/\bexternal-accent\b/g, 'external-hover-text')
@@ -125,7 +161,6 @@ export default class MenuPlugin extends Plugin {
                 }
             }
 
-            // In custom class mode (no built-in layout), apply base inline styles to anchors so whitelist vars work without CSS.
             const applyInlineBaseStyles = (a: HTMLElement, variant: 'internal' | 'external' | 'file' | 'generic') => {
                 const prefix = variant === 'generic' ? '' : `${variant}-`;
                 const get = (k: string) => (colors[`${prefix}${k}`] ?? colors[k]);
@@ -133,7 +168,6 @@ export default class MenuPlugin extends Plugin {
                 const textVal = get('text'); if (textVal) a.style.color = textVal as string;
                 const borderVal = get('border'); if (borderVal) a.style.borderColor = borderVal as string;
                 const fontVal = get('font'); if (fontVal) a.style.fontFamily = fontVal as string;
-                // Expose hover values as CSS variables on the anchor for user CSS to consume if desired
                 const hoverKeys = ['hover-bg', 'hover-text', 'hover-border', 'hover-font'];
                 for (const hk of hoverKeys) {
                     const v = get(hk);
@@ -141,10 +175,9 @@ export default class MenuPlugin extends Plugin {
                 }
             };
 
-            // Process each link
+            // Process regular links
             for (const link of links) {
                 if (link.startsWith('[[') && link.endsWith(']]')) {
-                    // Internal link
                     const linkContent = link.slice(2, -2);
                     let href = linkContent;
                     let text = linkContent;
@@ -163,7 +196,6 @@ export default class MenuPlugin extends Plugin {
                         this.app.workspace.openLinkText(href, ctx.sourcePath, false);
                     });
                 } else if (link.match(/^\[.*\]\(.*\)$/)) {
-                    // External link
                     const match = link.match(/^\[(.*)\]\((.*)\)$/);
                     if (match) {
                         const text = match[1];
@@ -174,7 +206,6 @@ export default class MenuPlugin extends Plugin {
                         });
                         a.style.cursor = 'pointer';
 
-                        // Add appropriate class based on link type
                         if (url.startsWith('file://')) {
                             a.addClass('menu-file-link');
                             if (!selectedLayout) applyInlineBaseStyles(a, 'file');
@@ -186,13 +217,10 @@ export default class MenuPlugin extends Plugin {
                             e.preventDefault();
                             if (url.startsWith('file://')) {
                                 try {
-                                    // Convert file URL to path and handle Windows paths
-                                    let filePath = decodeURIComponent(url.substring(7)); // Remove 'file://'
-                                    // Handle Windows paths that start with /C:
+                                    let filePath = decodeURIComponent(url.substring(7));
                                     if (filePath.startsWith('/') && filePath.charAt(2) === ':') {
                                         filePath = filePath.substring(1);
                                     }
-                                    console.log('Opening file path:', filePath);
                                     shell.openPath(filePath);
                                 } catch (error) {
                                     console.error('Failed to open file:', error);
@@ -203,6 +231,40 @@ export default class MenuPlugin extends Plugin {
                         });
                     }
                 }
+            }
+
+            // Process Dataview Query
+            if (dataviewQuery) {
+                const dvContainer = container.createDiv({ cls: 'menu-dataview-container' });
+                // Render the dataview query
+                // We wrap it in ```dataview ... ``` so Obsidian's renderer handles it
+                MarkdownRenderer.render(
+                    this.app,
+                    `\`\`\`dataview\n${dataviewQuery}\n\`\`\``,
+                    dvContainer,
+                    ctx.sourcePath,
+                    this
+                );
+
+                // MutationObserver to style links once they render
+                const observer = new MutationObserver((mutations) => {
+                    for (const mutation of mutations) {
+                        if (mutation.type === 'childList') {
+                            const links = dvContainer.querySelectorAll('a');
+                            links.forEach((link: HTMLElement) => {
+                                if (link.hasClass('internal-link')) {
+                                    link.addClass('menu-internal-link');
+                                    if (!selectedLayout) applyInlineBaseStyles(link, 'internal');
+                                } else {
+                                    link.addClass('menu-external-link');
+                                    if (!selectedLayout) applyInlineBaseStyles(link, 'external');
+                                }
+                            });
+                        }
+                    }
+                });
+
+                observer.observe(dvContainer, { childList: true, subtree: true });
             }
         });
     }

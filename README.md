@@ -1,87 +1,10 @@
 # Obsidian Menus
+Create simple, stylable menus from code blocks. Write links inside a menu code block, and the plugin renders a clean set of clickable items.
 
-Create simple, stylable menus from code blocks. You write links inside a `menu` code block, and the plugin renders:
-- a single div with class `menu-container`
-- a set of anchor tags inside it
+## Quick Start
+Create a menu using the menu code block:
 
-You can:
-- Pick a built-in template (default, minimal, slate, horizon, aether)
-- Use your own CSS class (no plugin CSS applied)
-- Override styles using a small, safe set of YAML-like variables
-- Mix template + extra classes (e.g., `layout: horizon wide`)
-
-CSS stays clean and predictable.
-
-## Build & Development
-
-### Prerequisites
-- Node.js 16+ and npm
-- Obsidian installed for testing
-
-### Setup
-
-1. Clone or navigate to the plugin directory:
-```bash
-cd obsidian-menus
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-### Building
-
-Build the plugin:
-```bash
-npm run dev
-```
-
-This runs esbuild in watch mode, automatically rebuilding whenever you make changes.
-
-For a production build:
-```bash
-npm run build
-```
-
-### Testing Locally
-
-1. Copy the built plugin to your Obsidian test vault:
-```bash
-# On Windows:
-copy main.js %APPDATA%\Obsidian\.obsidian\plugins\obsidian-menus\
-copy manifest.json %APPDATA%\Obsidian\.obsidian\plugins\obsidian-menus\
-copy styles.css %APPDATA%\Obsidian\.obsidian\plugins\obsidian-menus\
-
-# On macOS:
-cp main.js ~/Library/Application\ Support/Obsidian/.obsidian/plugins/obsidian-menus/
-cp manifest.json ~/Library/Application\ Support/Obsidian/.obsidian/plugins/obsidian-menus/
-cp styles.css ~/Library/Application\ Support/Obsidian/.obsidian/plugins/obsidian-menus/
-
-# On Linux:
-cp main.js ~/.config/Obsidian/.obsidian/plugins/obsidian-menus/
-cp manifest.json ~/.config/Obsidian/.obsidian/plugins/obsidian-menus/
-cp styles.css ~/.config/Obsidian/.obsidian/plugins/obsidian-menus/
-```
-
-2. Reload the plugin in Obsidian: Settings → Community Plugins → Reload (or restart Obsidian).
-
-### Publishing (via BRAT or Community)
-
-**For BRAT testing:**
-1. Push your changes to GitHub
-2. Update `manifest.json` with the new version
-3. Create a release on GitHub with the version tag
-4. Users can add your repo URL to BRAT: `https://github.com/YOUR_USERNAME/obsidian-menus`
-
-**For Community Plugin:**
-1. Submit a PR to the [Obsidian Sample Plugin](https://github.com/obsidianmd/obsidian-sample-plugin) repository with your manifest.
-
-## Basic Usage
-
-Create a menu using a `menu` code block with one of the built-in templates:
-
-````markdown
+```markdown
 ```menu
 layout: default
 [[Home]]
@@ -89,32 +12,24 @@ layout: default
 [Google](https://google.com)
 [Documents](file:///C:/Users/YourName/Documents)
 ```
-````
+```
 
-- `[[Note]]` or `[[Note|Alias]]` creates internal links.
-- `[Text](https://example.com)` creates web links.
-- `[Text](file:///C:/path/to/file)` opens local files/folders.
+The plugin supports three link types:
+- Internal: `[[Note]]` or `[[Note|Alias]]` opens notes in Obsidian
+- Web: `[Text](https://example.com)` opens in your browser
+- File: `[Text](file:///C:/path/to/file)` opens local files or folders
 
 ## Built-in Templates
 
-Available out of the box:
-- default
-- minimal
-- slate
-- horizon
-- aether
+Choose from five pre-styled layouts:
 
-Example:
+- `default` — balanced, general-purpose design
+- `minimal` — clean and understated
+- `slate` — darker theme with subtle borders
+- `horizon` — horizontal emphasis with gradients
+- `aether` — light and airy aesthetic
 
-````markdown
-```menu
-layout: slate
-[[Home]]
-[Links](https://obsidian.md)
-```
-````
-
-You can also add extra classes like `wide` next to the layout:
+Add extra classes after the layout name:
 
 ````markdown
 ```menu
@@ -122,32 +37,27 @@ layout: horizon wide
 [[Dashboard]]
 [Resources](https://example.com)
 ```
-````
+```
 
-Note: Built-in template CSS only applies when a built-in layout is selected. Internally, the container gets a `data-layout="..."` attribute which gates the plugin CSS. If you don’t select a built-in layout, none of the plugin CSS will affect your menu.
+## Custom Styling
 
-## Custom CSS Class Mode (No Plugin CSS)
-
-Use your own CSS by providing a custom class via `class:` or `layout:` with a non-built-in value. In this mode, the plugin does not apply any of its CSS. It only renders the HTML and exposes inline CSS variables from the YAML-like overrides.
+Use your own CSS class to bypass the built-in templates entirely. The plugin only renders the HTML structure and inline CSS variables—no default styles apply.
 
 ````markdown
 ```menu
-class: my-menu wide
+class: my-menu
 bg: #111
 text: #eee
 hover-text: #0af
-internal-hover-text: orange
 
 [[Home]]
 [Web](https://example.com)
-[Folder](file:///C:/Projects)
 ```
-````
+```
 
-Then, in a CSS snippet:
+Then create your own CSS snippet:
 
 ```css
-/* Example custom styling */
 .menu-container.my-menu {
   display: flex;
   gap: 0.5rem;
@@ -155,100 +65,53 @@ Then, in a CSS snippet:
 }
 
 .menu-container.my-menu a {
-  text-decoration: none;
   padding: 0.5rem 0.8rem;
   border-radius: 6px;
   color: var(--text, var(--text-normal));
   background: var(--bg, transparent);
-  border: 1px solid var(--border, var(--background-modifier-border));
 }
 
 .menu-container.my-menu a:hover {
   color: var(--hover-text, var(--text-accent));
   background: var(--hover-bg, transparent);
-  border-color: var(--hover-border, var(--text-accent));
 }
 ```
 
-## YAML-like Overrides (Safe Whitelist)
+## Style Variables
 
-The code block supports a small set of variables. No raw CSS properties are accepted in the code block. If you need full CSS power, use a CSS snippet in your IDE.
+Override colors and fonts using YAML-like variables inside the code block. Only these whitelisted properties are supported:
 
-Global variables:
-- bg
-- text
-- border
-- font
-- hover-text
-- hover-bg
-- hover-border
-- hover-font
+**Global variables:**
+- `bg` — background color for buttons
+- `text` — text color
+- `border` — border color
+- `font` — font family
+- `hover-text`, `hover-bg`, `hover-border`, `hover-font` — hover state styles
 
-Per link type variants (prefix with internal-, external-, file-):
-- internal-bg, internal-text, internal-border, internal-font
-- internal-hover-text, internal-hover-bg, internal-hover-border, internal-hover-font
-- external-... (same set)
-- file-... (same set)
+**Per-link-type variables:**
 
-Naming aliases supported:
-- text-hover -> hover-text
-- bg-hover -> hover-bg
-- border-hover -> hover-border
-- font-hover -> hover-font
-- accent -> hover-text (and internal-accent/external-accent/file-accent -> corresponding -hover-text)
+Prefix any global variable with `internal-`, `external-`, or `file-` to target specific link types:
 
-Behavior of keys:
-- bg applies to the buttons (anchors), not the container
-- hover-* applies to the hover state of the buttons
-- type-specific keys (e.g., internal-text) override the global ones for that link type
-
-Examples (template mode):
-````markdown
-```menu
-layout: default
-bg: #1a1a1a
-text: #ffffff
-hover-text: #ff6b6b
-border: #333333
-
-[[Home]]
-[GitHub](https://github.com)
-```
-````
-
-Per-link-type overrides:
 ````markdown
 ```menu
 layout: minimal
 internal-text: #00ff00
 external-text: #ff6600
 file-text: #0066ff
-internal-font: "Fira Code"
-external-font: "Georgia"
-file-font: "Arial"
 
 [[Internal Link]]
 [External Link](https://example.com)
 [File Link](file:///C:/Documents)
 ```
-````
+```
 
-## Link Types
+**Accepted formats:**
+- Colors: hex (`#1a1a1a`), rgb, hsl, CSS variables (`var(--text-accent)`), gradients
+- Fonts: plain names or quoted for spaces (`font: "Work Sans"`)
 
-- Internal: `[[Note Name]]` or `[[Note Name|Display Text]]`
-- External: `[Display Text](https://example.com)`
-- Files: `[Display Text](file:///C:/path/to/file)`
+## Dataview Integration
 
-Behavior:
-- Internal links open within Obsidian.
-- External links open in your browser.
-- File links open via the OS.
-
-## Dataview Support
-
-You can render Dataview queries inside the menu block. The links generated by the query will be styled just like other menu items.
-
-Prefix your query with `dataview:` or `dv:`.
+Generate links dynamically from Dataview queries. Prefix your query with `dataview:` or `dv:`:
 
 ````markdown
 ```menu
@@ -256,60 +119,35 @@ layout: default
 [[Home]]
 dataview: LIST FROM "Projects"
 ```
-````
-
-Or a more complex query:
-
-````markdown
-```menu
-layout: horizon
-dv: LIST WITHOUT ID link(file.link, file.name) FROM #tag
 ```
-````
 
-**Note:** The plugin automatically unwraps the Dataview list structure so the links participate directly in the menu's flex/grid layout.
-
-## Notes
-
-- Use either `layout:` or `class:`. If the value contains a built-in template, the template is applied. Otherwise, it’s treated as a pure CSS class (no plugin CSS).
-- If no `layout:` or `class:` is provided, `layout: default` is assumed.
-- Colors support hex, rgb, hsl, CSS variables, and gradients.
-- Font names with spaces need quotes: `font: "Work Sans"`.
-- You can append additional classes after the layout or class: `layout: horizon wide my-extra`.
+The plugin unwraps Dataview results so links blend seamlessly into your menu layout.
 
 ## Examples
 
-Built-in template with overrides:
+Template with gradient background:
+
 ````markdown
 ```menu
 layout: horizon
 bg: linear-gradient(45deg, #667eea, #764ba2)
 text: white
 hover-text: #ffd700
+
 [[Dashboard]]
 [Projects](https://github.com)
 ```
-````
+```
 
-Custom class with overrides:
+Custom class with theme variables:
+
 ````markdown
 ```menu
 class: my-toolbar
 text: var(--text-normal)
 hover-text: var(--text-accent)
+
 [[Inbox]]
 [Wiki](https://example.com)
 ```
-````
-
-Minimal template focusing on text colors:
-````markdown
-```menu
-layout: minimal
-internal-text: var(--text-accent)
-external-text: var(--text-faint)
-file-text: var(--text-muted)
-[[Notes]]
-[Web](https://example.com)
-[Folder](file:///C:/Projects)
 ```

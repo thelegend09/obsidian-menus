@@ -28,7 +28,6 @@ __export(main_exports, {
 });
 module.exports = __toCommonJS(main_exports);
 var import_obsidian = require("obsidian");
-var { shell } = require("electron");
 var DEFAULT_SETTINGS = {
   mySetting: "default"
 };
@@ -212,14 +211,19 @@ var MenuPlugin = class extends import_obsidian.Plugin {
             a.addEventListener("click", (e) => {
               e.preventDefault();
               if (url.startsWith("file://")) {
-                try {
-                  let filePath = decodeURIComponent(url.substring(7));
-                  if (filePath.startsWith("/") && filePath.charAt(2) === ":") {
-                    filePath = filePath.substring(1);
+                if (import_obsidian.Platform.isDesktop) {
+                  try {
+                    const { shell } = require("electron");
+                    let filePath = decodeURIComponent(url.substring(7));
+                    if (filePath.startsWith("/") && filePath.charAt(2) === ":") {
+                      filePath = filePath.substring(1);
+                    }
+                    shell.openPath(filePath);
+                  } catch (error) {
+                    console.error("Failed to open file:", error);
                   }
-                  shell.openPath(filePath);
-                } catch (error) {
-                  console.error("Failed to open file:", error);
+                } else {
+                  console.warn("File links are not supported on mobile.");
                 }
               } else {
                 window.open(url, "_blank", "noopener,noreferrer");

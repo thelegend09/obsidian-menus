@@ -1,6 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting, MarkdownRenderer } from 'obsidian';
-
-const { shell } = require('electron');
+import { App, Plugin, PluginSettingTab, Setting, MarkdownRenderer, Platform } from 'obsidian';
 
 interface MenuPluginSettings {
     mySetting: string;
@@ -216,14 +214,21 @@ export default class MenuPlugin extends Plugin {
                         a.addEventListener('click', (e) => {
                             e.preventDefault();
                             if (url.startsWith('file://')) {
-                                try {
-                                    let filePath = decodeURIComponent(url.substring(7));
-                                    if (filePath.startsWith('/') && filePath.charAt(2) === ':') {
-                                        filePath = filePath.substring(1);
+                                if (Platform.isDesktop) {
+                                    try {
+                                        const { shell } = require('electron');
+                                        let filePath = decodeURIComponent(url.substring(7));
+                                        if (filePath.startsWith('/') && filePath.charAt(2) === ':') {
+                                            filePath = filePath.substring(1);
+                                        }
+                                        shell.openPath(filePath);
+                                    } catch (error) {
+                                        console.error('Failed to open file:', error);
                                     }
-                                    shell.openPath(filePath);
-                                } catch (error) {
-                                    console.error('Failed to open file:', error);
+                                } else {
+                                    console.warn('File links are not supported on mobile.');
+                                    // Optionally show a notice to the user
+                                    // new Notice('File links are not supported on this device.');
                                 }
                             } else {
                                 window.open(url, '_blank', 'noopener,noreferrer');

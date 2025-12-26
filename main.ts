@@ -213,7 +213,19 @@ export default class MenuPlugin extends Plugin {
                 a.style.cursor = 'pointer';
                 a.addEventListener('click', (e) => {
                     e.preventDefault();
-                    this.app.workspace.openLinkText(href, ctx.sourcePath, false);
+                    let sourcePath = ctx?.sourcePath;
+                    if (!sourcePath) {
+                        const activeFile = this.app.workspace.getActiveFile();
+                        sourcePath = activeFile ? activeFile.path : '';
+                        if (!sourcePath) {
+                            console.error('[obsidian-menus] Could not determine sourcePath for internal link:', href);
+                        }
+                    }
+                    try {
+                        this.app.workspace.openLinkText(href, sourcePath, false);
+                    } catch (err) {
+                        console.error('[obsidian-menus] Failed to open internal link:', href, err);
+                    }
                 });
             } else if (link.match(/^\[.*\]\(.*\)$/)) {
                 const match = link.match(/^\[(.*)\]\((.*)\)$/);

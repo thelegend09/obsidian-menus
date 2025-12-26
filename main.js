@@ -33,237 +33,16 @@ var DEFAULT_SETTINGS = {
 };
 var MenuPlugin = class extends import_obsidian.Plugin {
   async onload() {
-    await this.loadSettings();
-    this.addSettingTab(new MenuPluginSettingTab(this.app, this));
-    this.registerMarkdownCodeBlockProcessor("menu", (source, el, ctx) => {
-      const lines = source.trim().split("\n");
-      let layoutOrClass = "";
-      let colors = {};
-      const links = [];
-      let dataviewQuery = "";
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (trimmed.startsWith("layout:") || trimmed.startsWith("class:")) {
-          const colonIndex = trimmed.indexOf(":");
-          layoutOrClass = trimmed.substring(colonIndex + 1).trim();
-        } else if (trimmed.startsWith("dataview:") || trimmed.startsWith("dv:")) {
-          const colonIndex = trimmed.indexOf(":");
-          dataviewQuery = trimmed.substring(colonIndex + 1).trim();
-        } else if (trimmed.includes(":") && !trimmed.startsWith("[") && !trimmed.startsWith("[[") && !dataviewQuery) {
-          const [key, ...valueParts] = trimmed.split(":");
-          const value = valueParts.join(":").trim();
-          if (key && value && !key.includes("//") && !key.includes("http")) {
-            colors[key.trim()] = value;
-          }
-        } else if (trimmed && !trimmed.includes(":") && !dataviewQuery) {
-          links.push(trimmed);
-        } else if (trimmed.startsWith("[") && !dataviewQuery) {
-          links.push(trimmed);
-        } else if (dataviewQuery) {
-          dataviewQuery += "\n" + line;
-        }
-      }
-      layoutOrClass = "";
-      colors = {};
-      links.length = 0;
-      dataviewQuery = "";
-      let isDataviewBlock = false;
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (isDataviewBlock) {
-          dataviewQuery += "\n" + line;
-          continue;
-        }
-        if (trimmed.startsWith("layout:") || trimmed.startsWith("class:")) {
-          const colonIndex = trimmed.indexOf(":");
-          layoutOrClass = trimmed.substring(colonIndex + 1).trim();
-        } else if (trimmed.startsWith("dataview:") || trimmed.startsWith("dv:")) {
-          const colonIndex = trimmed.indexOf(":");
-          dataviewQuery = trimmed.substring(colonIndex + 1).trim();
-          isDataviewBlock = true;
-        } else if (trimmed.includes(":") && !trimmed.startsWith("[") && !trimmed.startsWith("[[")) {
-          const [key, ...valueParts] = trimmed.split(":");
-          const value = valueParts.join(":").trim();
-          if (key && value && !key.includes("//") && !key.includes("http")) {
-            colors[key.trim()] = value;
-          }
-        } else if (trimmed) {
-          links.push(trimmed);
-        }
-      }
-      const builtInLayouts = /* @__PURE__ */ new Set(["default", "minimal", "slate", "horizon", "aether"]);
-      const container = el.createEl("div", { cls: "menu-container" });
-      let selectedLayout = "";
-      let extraClasses = [];
-      if (layoutOrClass) {
-        const tokens = layoutOrClass.split(/\s+/).filter(Boolean);
-        if (tokens.length) {
-          const builtInIndex = tokens.findIndex((t) => builtInLayouts.has(t));
-          if (builtInIndex !== -1) {
-            selectedLayout = tokens[builtInIndex];
-            extraClasses = tokens.filter((_, i) => i !== builtInIndex);
-          } else {
-            extraClasses = tokens;
-          }
-        }
-      } else {
-        selectedLayout = "default";
-      }
-      if (selectedLayout) {
-        container.setAttr("data-layout", selectedLayout);
-      }
-      for (const cls of extraClasses) {
-        container.addClass(cls);
-      }
-      if (Object.keys(colors).length > 0) {
-        const baseKeys = /* @__PURE__ */ new Set([
-          "bg",
-          "text",
-          "border",
-          "font",
-          "hover-text",
-          "hover-bg",
-          "hover-border",
-          "hover-font"
-        ]);
-        const normalizeKey = (raw) => {
-          let s = raw.trim().toLowerCase();
-          s = s.replace(/\btext-hover\b/g, "hover-text").replace(/\bbg-hover\b/g, "hover-bg").replace(/\bborder-hover\b/g, "hover-border").replace(/\binternal-text-hover\b/g, "internal-hover-text").replace(/\binternal-bg-hover\b/g, "internal-hover-bg").replace(/\binternal-border-hover\b/g, "internal-hover-border").replace(/\bexternal-text-hover\b/g, "external-hover-text").replace(/\bexternal-bg-hover\b/g, "external-hover-bg").replace(/\bexternal-border-hover\b/g, "external-hover-border").replace(/\bfile-text-hover\b/g, "file-hover-text").replace(/\bfile-bg-hover\b/g, "file-hover-bg").replace(/\bfile-border-hover\b/g, "file-hover-border").replace(/\baccent\b/g, "hover-text").replace(/\binternal-accent\b/g, "internal-hover-text").replace(/\bexternal-accent\b/g, "external-hover-text").replace(/\bfile-accent\b/g, "file-hover-text").replace(/\bbackground\b/g, "bg");
-          return s;
-        };
-        const isAllowed = (key) => {
-          if (baseKeys.has(key))
-            return true;
-          const m = key.match(/^(internal|external|file)-(.*)$/);
-          return !!(m && baseKeys.has(m[2]));
-        };
-        for (const [rawKey, value] of Object.entries(colors)) {
-          const key = normalizeKey(rawKey);
-          if (!isAllowed(key))
-            continue;
-          container.style.setProperty(`--${key}`, value);
-        }
-      }
-      const applyInlineBaseStyles = (a, variant) => {
-        const prefix = variant === "generic" ? "" : `${variant}-`;
-        const get = (k) => {
-          var _a;
-          return (_a = colors[`${prefix}${k}`]) != null ? _a : colors[k];
-        };
-        const bgVal = get("bg");
-        if (bgVal)
-          a.style.background = bgVal;
-        const textVal = get("text");
-        if (textVal)
-          a.style.color = textVal;
-        const borderVal = get("border");
-        if (borderVal)
-          a.style.borderColor = borderVal;
-        const fontVal = get("font");
-        if (fontVal)
-          a.style.fontFamily = fontVal;
-        const hoverKeys = ["hover-bg", "hover-text", "hover-border", "hover-font"];
-        for (const hk of hoverKeys) {
-          const v = get(hk);
-          if (v)
-            a.style.setProperty(`--${hk}`, v);
-        }
-      };
-      for (const link of links) {
-        if (link.startsWith("[[") && link.endsWith("]]")) {
-          const linkContent = link.slice(2, -2);
-          let href = linkContent;
-          let text = linkContent;
-          if (linkContent.includes("|")) {
-            [href, text] = linkContent.split("|");
-          }
-          const a = container.createEl("a", {
-            text,
-            attr: { "data-href": href }
-          });
-          a.addClass("menu-internal-link");
-          if (!selectedLayout)
-            applyInlineBaseStyles(a, "internal");
-          a.style.cursor = "pointer";
-          a.addEventListener("click", (e) => {
-            e.preventDefault();
-            this.app.workspace.openLinkText(href, ctx.sourcePath, false);
-          });
-        } else if (link.match(/^\[.*\]\(.*\)$/)) {
-          const match = link.match(/^\[(.*)\]\((.*)\)$/);
-          if (match) {
-            const text = match[1];
-            const url = match[2];
-            const a = container.createEl("a", {
-              text,
-              attr: url.startsWith("file://") ? {} : { href: url, target: "_blank", rel: "noopener noreferrer" }
-            });
-            a.style.cursor = "pointer";
-            if (url.startsWith("file://")) {
-              a.addClass("menu-file-link");
-              if (!selectedLayout)
-                applyInlineBaseStyles(a, "file");
-            } else {
-              a.addClass("menu-external-link");
-              if (!selectedLayout)
-                applyInlineBaseStyles(a, "external");
-            }
-            a.addEventListener("click", (e) => {
-              e.preventDefault();
-              if (url.startsWith("file://")) {
-                if (import_obsidian.Platform.isDesktop) {
-                  try {
-                    const { shell } = require("electron");
-                    let filePath = decodeURIComponent(url.substring(7));
-                    if (filePath.startsWith("/") && filePath.charAt(2) === ":") {
-                      filePath = filePath.substring(1);
-                    }
-                    shell.openPath(filePath);
-                  } catch (error) {
-                    console.error("Failed to open file:", error);
-                  }
-                } else {
-                  console.warn("File links are not supported on mobile.");
-                }
-              } else {
-                window.open(url, "_blank", "noopener,noreferrer");
-              }
-            });
-          }
-        }
-      }
-      if (dataviewQuery) {
-        const dvContainer = container.createDiv({ cls: "menu-dataview-container" });
-        import_obsidian.MarkdownRenderer.render(
-          this.app,
-          `\`\`\`dataview
-${dataviewQuery}
-\`\`\``,
-          dvContainer,
-          ctx.sourcePath,
-          this
-        );
-        const observer = new MutationObserver((mutations) => {
-          for (const mutation of mutations) {
-            if (mutation.type === "childList") {
-              const links2 = dvContainer.querySelectorAll("a");
-              links2.forEach((link) => {
-                if (link.hasClass("internal-link")) {
-                  link.addClass("menu-internal-link");
-                  if (!selectedLayout)
-                    applyInlineBaseStyles(link, "internal");
-                } else {
-                  link.addClass("menu-external-link");
-                  if (!selectedLayout)
-                    applyInlineBaseStyles(link, "external");
-                }
-              });
-            }
-          }
-        });
-        observer.observe(dvContainer, { childList: true, subtree: true });
-      }
-    });
+    try {
+      await this.loadSettings();
+      this.addSettingTab(new MenuPluginSettingTab(this.app, this));
+      this.registerMarkdownCodeBlockProcessor("menu", (source, el, ctx) => {
+        this.processMenuBlock(source, el, ctx);
+      });
+    } catch (error) {
+      console.error("[obsidian-menus] Failed to load plugin:", error);
+      throw error;
+    }
   }
   onunload() {
   }
@@ -272,6 +51,236 @@ ${dataviewQuery}
   }
   async saveSettings() {
     await this.saveData(this.settings);
+  }
+  processMenuBlock(source, el, ctx) {
+    const lines = source.trim().split("\n");
+    let layoutOrClass = "";
+    let colors = {};
+    const links = [];
+    let dataviewQuery = "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("layout:") || trimmed.startsWith("class:")) {
+        const colonIndex = trimmed.indexOf(":");
+        layoutOrClass = trimmed.substring(colonIndex + 1).trim();
+      } else if (trimmed.startsWith("dataview:") || trimmed.startsWith("dv:")) {
+        const colonIndex = trimmed.indexOf(":");
+        dataviewQuery = trimmed.substring(colonIndex + 1).trim();
+      } else if (trimmed.includes(":") && !trimmed.startsWith("[") && !trimmed.startsWith("[[") && !dataviewQuery) {
+        const [key, ...valueParts] = trimmed.split(":");
+        const value = valueParts.join(":").trim();
+        if (key && value && !key.includes("//") && !key.includes("http")) {
+          colors[key.trim()] = value;
+        }
+      } else if (trimmed && !trimmed.includes(":") && !dataviewQuery) {
+        links.push(trimmed);
+      } else if (trimmed.startsWith("[") && !dataviewQuery) {
+        links.push(trimmed);
+      } else if (dataviewQuery) {
+        dataviewQuery += "\n" + line;
+      }
+    }
+    layoutOrClass = "";
+    colors = {};
+    links.length = 0;
+    dataviewQuery = "";
+    let isDataviewBlock = false;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (isDataviewBlock) {
+        dataviewQuery += "\n" + line;
+        continue;
+      }
+      if (trimmed.startsWith("layout:") || trimmed.startsWith("class:")) {
+        const colonIndex = trimmed.indexOf(":");
+        layoutOrClass = trimmed.substring(colonIndex + 1).trim();
+      } else if (trimmed.startsWith("dataview:") || trimmed.startsWith("dv:")) {
+        const colonIndex = trimmed.indexOf(":");
+        dataviewQuery = trimmed.substring(colonIndex + 1).trim();
+        isDataviewBlock = true;
+      } else if (trimmed.includes(":") && !trimmed.startsWith("[") && !trimmed.startsWith("[[")) {
+        const [key, ...valueParts] = trimmed.split(":");
+        const value = valueParts.join(":").trim();
+        if (key && value && !key.includes("//") && !key.includes("http")) {
+          colors[key.trim()] = value;
+        }
+      } else if (trimmed) {
+        links.push(trimmed);
+      }
+    }
+    const builtInLayouts = /* @__PURE__ */ new Set(["default", "minimal", "slate", "horizon", "aether"]);
+    const container = el.createEl("div", { cls: "menu-container" });
+    let selectedLayout = "";
+    let extraClasses = [];
+    if (layoutOrClass) {
+      const tokens = layoutOrClass.split(/\s+/).filter(Boolean);
+      if (tokens.length) {
+        const builtInIndex = tokens.findIndex((t) => builtInLayouts.has(t));
+        if (builtInIndex !== -1) {
+          selectedLayout = tokens[builtInIndex];
+          extraClasses = tokens.filter((_, i) => i !== builtInIndex);
+        } else {
+          extraClasses = tokens;
+        }
+      }
+    } else {
+      selectedLayout = "default";
+    }
+    if (selectedLayout) {
+      container.setAttr("data-layout", selectedLayout);
+    }
+    for (const cls of extraClasses) {
+      container.addClass(cls);
+    }
+    if (Object.keys(colors).length > 0) {
+      const baseKeys = /* @__PURE__ */ new Set([
+        "bg",
+        "text",
+        "border",
+        "font",
+        "hover-text",
+        "hover-bg",
+        "hover-border",
+        "hover-font"
+      ]);
+      const normalizeKey = (raw) => {
+        let s = raw.trim().toLowerCase();
+        s = s.replace(/\btext-hover\b/g, "hover-text").replace(/\bbg-hover\b/g, "hover-bg").replace(/\bborder-hover\b/g, "hover-border").replace(/\binternal-text-hover\b/g, "internal-hover-text").replace(/\binternal-bg-hover\b/g, "internal-hover-bg").replace(/\binternal-border-hover\b/g, "internal-hover-border").replace(/\bexternal-text-hover\b/g, "external-hover-text").replace(/\bexternal-bg-hover\b/g, "external-hover-bg").replace(/\bexternal-border-hover\b/g, "external-hover-border").replace(/\bfile-text-hover\b/g, "file-hover-text").replace(/\bfile-bg-hover\b/g, "file-hover-bg").replace(/\bfile-border-hover\b/g, "file-hover-border").replace(/\baccent\b/g, "hover-text").replace(/\binternal-accent\b/g, "internal-hover-text").replace(/\bexternal-accent\b/g, "external-hover-text").replace(/\bfile-accent\b/g, "file-hover-text").replace(/\bbackground\b/g, "bg");
+        return s;
+      };
+      const isAllowed = (key) => {
+        if (baseKeys.has(key))
+          return true;
+        const m = key.match(/^(internal|external|file)-(.*)$/);
+        return !!(m && baseKeys.has(m[2]));
+      };
+      for (const [rawKey, value] of Object.entries(colors)) {
+        const key = normalizeKey(rawKey);
+        if (!isAllowed(key))
+          continue;
+        container.style.setProperty(`--${key}`, value);
+      }
+    }
+    const applyInlineBaseStyles = (a, variant) => {
+      const prefix = variant === "generic" ? "" : `${variant}-`;
+      const get = (k) => {
+        var _a;
+        return (_a = colors[`${prefix}${k}`]) != null ? _a : colors[k];
+      };
+      const bgVal = get("bg");
+      if (bgVal)
+        a.style.background = bgVal;
+      const textVal = get("text");
+      if (textVal)
+        a.style.color = textVal;
+      const borderVal = get("border");
+      if (borderVal)
+        a.style.borderColor = borderVal;
+      const fontVal = get("font");
+      if (fontVal)
+        a.style.fontFamily = fontVal;
+      const hoverKeys = ["hover-bg", "hover-text", "hover-border", "hover-font"];
+      for (const hk of hoverKeys) {
+        const v = get(hk);
+        if (v)
+          a.style.setProperty(`--${hk}`, v);
+      }
+    };
+    for (const link of links) {
+      if (link.startsWith("[[") && link.endsWith("]]")) {
+        const linkContent = link.slice(2, -2);
+        let href = linkContent;
+        let text = linkContent;
+        if (linkContent.includes("|")) {
+          [href, text] = linkContent.split("|");
+        }
+        const a = container.createEl("a", {
+          text,
+          attr: { "data-href": href }
+        });
+        a.addClass("menu-internal-link");
+        if (!selectedLayout)
+          applyInlineBaseStyles(a, "internal");
+        a.style.cursor = "pointer";
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.app.workspace.openLinkText(href, ctx.sourcePath, false);
+        });
+      } else if (link.match(/^\[.*\]\(.*\)$/)) {
+        const match = link.match(/^\[(.*)\]\((.*)\)$/);
+        if (match) {
+          const text = match[1];
+          const url = match[2];
+          const a = container.createEl("a", {
+            text,
+            attr: url.startsWith("file://") ? {} : { href: url, target: "_blank", rel: "noopener noreferrer" }
+          });
+          a.style.cursor = "pointer";
+          if (url.startsWith("file://")) {
+            a.addClass("menu-file-link");
+            if (!selectedLayout)
+              applyInlineBaseStyles(a, "file");
+          } else {
+            a.addClass("menu-external-link");
+            if (!selectedLayout)
+              applyInlineBaseStyles(a, "external");
+          }
+          a.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (url.startsWith("file://")) {
+              if (import_obsidian.Platform.isDesktop) {
+                try {
+                  const electronPath = "electron";
+                  const { shell } = require(electronPath);
+                  let filePath = decodeURIComponent(url.substring(7));
+                  if (filePath.startsWith("/") && filePath.charAt(2) === ":") {
+                    filePath = filePath.substring(1);
+                  }
+                  shell.openPath(filePath);
+                } catch (error) {
+                  console.error("Failed to open file:", error);
+                }
+              } else {
+                console.warn("File links are not supported on mobile.");
+              }
+            } else {
+              window.open(url, "_blank", "noopener,noreferrer");
+            }
+          });
+        }
+      }
+    }
+    if (dataviewQuery) {
+      const dvContainer = container.createDiv({ cls: "menu-dataview-container" });
+      import_obsidian.MarkdownRenderer.render(
+        this.app,
+        `\`\`\`dataview
+${dataviewQuery}
+\`\`\``,
+        dvContainer,
+        ctx.sourcePath,
+        this
+      );
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.type === "childList") {
+            const links2 = dvContainer.querySelectorAll("a");
+            links2.forEach((link) => {
+              if (link.hasClass("internal-link")) {
+                link.addClass("menu-internal-link");
+                if (!selectedLayout)
+                  applyInlineBaseStyles(link, "internal");
+              } else {
+                link.addClass("menu-external-link");
+                if (!selectedLayout)
+                  applyInlineBaseStyles(link, "external");
+              }
+            });
+          }
+        }
+      });
+      observer.observe(dvContainer, { childList: true, subtree: true });
+    }
   }
 };
 var MenuPluginSettingTab = class extends import_obsidian.PluginSettingTab {

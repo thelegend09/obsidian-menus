@@ -12,6 +12,71 @@ You can:
 
 CSS stays clean and predictable.
 
+## Build & Development
+
+### Prerequisites
+- Node.js 16+ and npm
+- Obsidian installed for testing
+
+### Setup
+
+1. Clone or navigate to the plugin directory:
+```bash
+cd obsidian-menus
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+### Building
+
+Build the plugin:
+```bash
+npm run dev
+```
+
+This runs esbuild in watch mode, automatically rebuilding whenever you make changes.
+
+For a production build:
+```bash
+npm run build
+```
+
+### Testing Locally
+
+1. Copy the built plugin to your Obsidian test vault:
+```bash
+# On Windows:
+copy main.js %APPDATA%\Obsidian\.obsidian\plugins\obsidian-menus\
+copy manifest.json %APPDATA%\Obsidian\.obsidian\plugins\obsidian-menus\
+copy styles.css %APPDATA%\Obsidian\.obsidian\plugins\obsidian-menus\
+
+# On macOS:
+cp main.js ~/Library/Application\ Support/Obsidian/.obsidian/plugins/obsidian-menus/
+cp manifest.json ~/Library/Application\ Support/Obsidian/.obsidian/plugins/obsidian-menus/
+cp styles.css ~/Library/Application\ Support/Obsidian/.obsidian/plugins/obsidian-menus/
+
+# On Linux:
+cp main.js ~/.config/Obsidian/.obsidian/plugins/obsidian-menus/
+cp manifest.json ~/.config/Obsidian/.obsidian/plugins/obsidian-menus/
+cp styles.css ~/.config/Obsidian/.obsidian/plugins/obsidian-menus/
+```
+
+2. Reload the plugin in Obsidian: Settings → Community Plugins → Reload (or restart Obsidian).
+
+### Publishing (via BRAT or Community)
+
+**For BRAT testing:**
+1. Push your changes to GitHub
+2. Update `manifest.json` with the new version
+3. Create a release on GitHub with the version tag
+4. Users can add your repo URL to BRAT: `https://github.com/YOUR_USERNAME/obsidian-menus`
+
+**For Community Plugin:**
+1. Submit a PR to the [Obsidian Sample Plugin](https://github.com/obsidianmd/obsidian-sample-plugin) repository with your manifest.
+
 ## Basic Usage
 
 Create a menu using a `menu` code block with one of the built-in templates:
